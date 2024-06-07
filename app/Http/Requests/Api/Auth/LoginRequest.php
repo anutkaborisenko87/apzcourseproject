@@ -24,7 +24,7 @@ class LoginRequest extends FormRequest
     final public function rules(): array
     {
         return [
-            'email'=> 'required|email:rfc,dns',
+            'email'=> 'required',
             'password' => 'required'
         ];
     }

@@ -1,0 +1,57 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Anna Borisenko Documentation",
+        "version": "3.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api"
+        }
+    ],
+    "paths": {
+        "/api/": {},
+        "/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "operationId": "4d975fd081d94528bb50a724377b263b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "exampleuser@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "4011": {
+                        "description": "Blocked User"
+                    },
+                    "4012": {
+                        "description": "You do not have access rights"
+                    }
+                }
+            }
+        }
+    }
+}
