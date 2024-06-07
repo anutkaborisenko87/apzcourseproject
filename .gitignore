@@ -13,3 +13,4 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/react-front/package-lock.json
