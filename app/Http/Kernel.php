@@ -65,8 +65,11 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'user_exists' => \App\Http\Middleware\UserFound::class,
+        'employee_exists' => \App\Http\Middleware\EmployeeFound::class,
         'user_active' => \App\Http\Middleware\UserActive::class,
+        'employee_active' => \App\Http\Middleware\EmployeeActive::class,
         'user_not_active' => \App\Http\Middleware\UserNotActive::class,
+        'employee_not_active' => \App\Http\Middleware\EmployeeNotActive::class,
         'json_resp' => \App\Http\Middleware\ForceJsonResponse::class,
     ];
 }

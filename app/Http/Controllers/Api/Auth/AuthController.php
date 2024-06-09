@@ -16,16 +16,16 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
         if (!Auth::attempt($credentials)) {
-            return response(['error' => 'Invalid credentials'], 401);
+            return response(['error' => 'Неввірний логін або пароль'], 401);
         }
         $user = auth()->user();
         if (!$user->active) {
             $user->tokens()->delete();
-            return response(['error' => 'User deactivated'], 401);
+            return response(['error' => 'Цього користувача було деактивовано'], 401);
         }
         if (!$user->roles()->first()) {
             $user->tokens()->delete();
-            return response(['error' => 'You do not have access rights'], 401);
+            return response(['error' => 'У вас немає прав доступу до системи'], 401);
         }
         $newToken = $user->createToken('Personal Access Token');
         $resUser = (new AuthUserResource($user))->resolve();
@@ -37,11 +37,11 @@ class AuthController extends Controller
         $user = Auth::guard('api')->user();
         if (!$user->active) {
             $user->tokens()->delete();
-            return response(['error' => 'User deactivated'], 401);
+            return response(['error' => 'Користувача деактивовано'], 401);
         }
         if (!$user->roles()->first()) {
             $user->tokens()->delete();
-            return response(['error' => 'You do not have access rights'], 401);
+            return response(['error' => 'У вас немає прав доступу до системи'], 401);
         }
         $resUser = (new AuthUserResource($user))->resolve();
         return response(['user' => $resUser]);
@@ -55,6 +55,6 @@ class AuthController extends Controller
             $user = Auth::guard('api')->user();
             $user->tokens()->delete();
         }
-        return response(['message' => 'You are logged out']);
+        return response(['message' => 'Ви успішно розлогінені']);
     }
 }

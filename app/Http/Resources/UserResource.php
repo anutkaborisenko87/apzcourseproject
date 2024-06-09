@@ -48,7 +48,7 @@ class UserResource extends JsonResource
             $data['user_category'] = $this->userCategory();
         }
         if ($this->roles()->first()) {
-            $data['role'] = $this->roles()->first()->name;
+            $data['role'] = (new RoleResource($this->roles()->first()))->resolve();
         }
         return $data;
     }

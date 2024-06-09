@@ -2,11 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Employee;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 
-class UserFound
+class EmployeeFound
 {
     /**
      * Handle an incoming request.
@@ -17,9 +18,9 @@ class UserFound
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = User::find($request->route('user'));
-        if (!$user) {
-               return response(['error' => 'Користувача не знайдено'], 404);
+        $employee = Employee::find($request->route('employee'));
+        if (!$employee) {
+               return response(['error' => 'Співробітника не знацдено'], 404);
             }
         return $next($request);
     }

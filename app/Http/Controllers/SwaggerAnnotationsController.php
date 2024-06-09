@@ -7,7 +7,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Info(
  *     version="3.0.0",
- *     title="Anna Borisenko Documentation"
+ *     title="АПІ Документація для ІС 'Центр дошкільного розвитку'"
  * ),
  *
  * @OA\SecurityScheme(
@@ -122,13 +122,13 @@ use OpenApi\Annotations as OA;
  *         @OA\JsonContent(
  *             oneOf={
  *                 @OA\Schema(
- *                     @OA\Property(property="error", type="string", example="Invalid credentials"),
+ *                     @OA\Property(property="error", type="string", example="Неввірний логін або пароль"),
  *                 ),
  *                 @OA\Schema(
- *                     @OA\Property(property="error", type="string", example="Blocked User"),
+ *                     @OA\Property(property="error", type="string", example="Цього користувача було деактивовано"),
  *                 ),
  *                 @OA\Schema(
- *                     @OA\Property(property="error", type="string", example="You do not have access rights"),
+ *                     @OA\Property(property="error", type="string", example="У вас немає прав доступу до системи"),
  *                 )
  *             }
  *         )
@@ -576,6 +576,554 @@ use OpenApi\Annotations as OA;
  *          description="User not found"
  *      )
  *  )
+ * @OA\Get(
+ *      path="/user/{userId}",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\Parameter(
+ *          name="userId",
+ *          in="path",
+ *          required=true,
+ *          description="User ID to update",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(ref="#/components/schemas/Profile")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unathorized"
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="User not found"
+ *      )
+ *  )
+ * @OA\Get(
+ *      path="/roles_list",
+ *      tags={"Roles"},
+ *      security={{"bearerAuth":{}}},
+ *
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(ref="#/components/schemas/Role")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unathorized"
+ *      )
+ *  )
+ * @OA\Get(
+ *       path="/employees/active",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *            name="page",
+ *            in="query",
+ *            description="The page number to retrieve.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32"
+ *            )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Active teachers list "
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
+ *       path="/employees/not_active",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *            name="page",
+ *            in="query",
+ *            description="The page number to retrieve.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32"
+ *            )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Not active teachers list "
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
+ *       path="/employees/working",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *            name="page",
+ *            in="query",
+ *            description="The page number to retrieve.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32"
+ *            )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Not active teachers list "
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
+ *       path="/employees/{employeeId}/reactivate",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="employeeId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation",
+ *           @OA\JsonContent(ref="#/components/schemas/Profile")
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=403,
+ *           description="Bad request"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="User not found"
+ *       )
+ *   )
+ * @OA\Get(
+ *       path="/employees/{employeeId}/deactivate",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="employeeId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation",
+ *           @OA\JsonContent(ref="#/components/schemas/Profile")
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=403,
+ *           description="Bad request"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="User not found"
+ *       )
+ *   )
+ * @OA\Post(
+ *       path="/employees/create",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   type="object",
+ *                   required={"last_name", "first_name"},
+ *                   @OA\Property(
+ *                        property="user",
+ *                        type="object",
+ *                        required={"last_name", "first_name"},
+ *                         @OA\Property(
+ *                             property="last_name",
+ *                             type="string",
+ *                             example="Lastname"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="first_name",
+ *                             type="string",
+ *                             example="Firstname"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="patronymic_name",
+ *                             type="string",
+ *                             example="Patronymicname"
+ *                         ),
+ *                          @OA\Property(
+ *                              property="email",
+ *                              type="string",
+ *                              example="email@example.com"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="city",
+ *                              type="string",
+ *                              example="ExampleCity"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="street",
+ *                              type="string",
+ *                              example="ExampleStreet"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="house_number",
+ *                              type="string",
+ *                              example="12"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="apartment_number",
+ *                              type="string",
+ *                              example="12"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="birth_date",
+ *                              type="string",
+ *                              format="date",
+ *                              example="2000-01-01"
+ *                          )
+ *                    ),
+ *                   @OA\Property(
+ *                        property="employee",
+ *                        type="object",
+ *                        required={"position_id"},
+ *                         @OA\Property(
+ *                             property="position_id",
+ *                             type="number",
+ *                             example="1"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="phone",
+ *                             type="string",
+ *                             example="+380256456"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="contract_number",
+ *                             type="string",
+ *                             example="123456"
+ *                         ),
+ *                          @OA\Property(
+ *                              property="passport_data",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="bank_account",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="bank_title",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="EDRPOU_bank_code",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="code_IBAN",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="medical_card_number",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="employment_date",
+ *                              type="string",
+ *                              format="date",
+ *                              example="2000-01-01"
+ *                          )
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Login successful"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ * @OA\Put(
+ *       path="/employees/{employeeId}/update",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *     @OA\Parameter(
+ *           name="employeeId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   type="object",
+ *                   required={"last_name", "first_name"},
+ *                   @OA\Property(
+ *                        property="user",
+ *                        type="object",
+ *                        required={"last_name", "first_name"},
+ *                         @OA\Property(
+ *                             property="last_name",
+ *                             type="string",
+ *                             example="Lastname"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="first_name",
+ *                             type="string",
+ *                             example="Firstname"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="patronymic_name",
+ *                             type="string",
+ *                             example="Patronymicname"
+ *                         ),
+ *                          @OA\Property(
+ *                              property="email",
+ *                              type="string",
+ *                              example="email@example.com"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="city",
+ *                              type="string",
+ *                              example="ExampleCity"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="street",
+ *                              type="string",
+ *                              example="ExampleStreet"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="house_number",
+ *                              type="string",
+ *                              example="12"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="apartment_number",
+ *                              type="string",
+ *                              example="12"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="birth_date",
+ *                              type="string",
+ *                              format="date",
+ *                              example="2000-01-01"
+ *                          )
+ *                    ),
+ *                   @OA\Property(
+ *                        property="employee",
+ *                        type="object",
+ *                        required={"position_id"},
+ *                         @OA\Property(
+ *                             property="position_id",
+ *                             type="number",
+ *                             example="1"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="phone",
+ *                             type="string",
+ *                             example="+380256456"
+ *                         ),
+ *                         @OA\Property(
+ *                             property="contract_number",
+ *                             type="string",
+ *                             example="123456"
+ *                         ),
+ *                          @OA\Property(
+ *                              property="passport_data",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="bank_account",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="bank_title",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="EDRPOU_bank_code",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="code_IBAN",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="medical_card_number",
+ *                              type="string"
+ *                          ),
+ *                          @OA\Property(
+ *                              property="employment_date",
+ *                              type="string",
+ *                              format="date",
+ *                              example="2000-01-01"
+ *                          )
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Login successful"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ * @OA\Delete(
+ *       path="/employees/{employeeId}/delete",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="employeeId",
+ *           in="path",
+ *           required=true,
+ *           description="Employee ID to delete",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation",
+ *           @OA\JsonContent(ref="#/components/schemas/Profile")
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=403,
+ *           description="Bad request"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="User not found"
+ *       )
+ *   )
  */
 
 class SwaggerAnnotationsController extends Controller

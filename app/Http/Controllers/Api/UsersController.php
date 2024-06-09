@@ -49,6 +49,16 @@ class UsersController extends Controller
         }
     }
 
+    final public function showUser(int $userId): Response
+    {
+        try {
+            $user = $this->userService->getUserById($userId);
+            return response($user);
+        } catch (Exception $exception) {
+            return response(['error' => $exception->getMessage()], 400);
+        }
+    }
+
     final public function store(CreateUserRequest $request): Response
     {
         try {

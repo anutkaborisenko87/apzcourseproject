@@ -13,8 +13,7 @@ const Login = () => {
     };
     const onSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        const payload = credentials;
-        axiosClient.post('/login', payload)
+        axiosClient.post('/login', credentials)
             .then(({data}) => {
                 console.log('data', data)
                 setUser(data.user);
@@ -32,7 +31,7 @@ const Login = () => {
                         ...(password ? {password} : {})
                     }));
                 }
-                if (resp && resp.status === 401) {
+                if (resp && resp.status !== 422) {
                     const {error} = resp.data;
                     setAllertError(error);
                 }
@@ -42,12 +41,12 @@ const Login = () => {
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <img className="mx-auto h-16 w-auto" src="/logo.png" alt="Your Company"/>
-                <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Авторизуйтесь</h2>
+                <h2 className="mt-10 text-center text-xl font-medium leading-9 tracking-tight text-gray-900">Вас вітає ІС "Центр дошкільного розвитку"</h2>
+                <p className="mt-10 text-center text-sm leading-9 tracking-tight text-gray-900">Спочатку необхідно авторизуватись</p>
             </div>
             {allertError !== '' ?
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                    <p className="font-bold">Error!</p>
+                    <p className="font-bold">Помилка!</p>
                     <p>{allertError}</p>
                 </div>
                 : ''

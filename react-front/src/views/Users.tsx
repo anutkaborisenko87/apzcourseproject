@@ -3,10 +3,17 @@ import axiosClient from "../axios-client.ts";
 import Pagination from "../components/Pagination.tsx";
 import Modal from "../components/Modal.tsx";
 import {useStateContext} from "../../contexts/ContextProvider.tsx";
+import {PencilSquareIcon} from "@heroicons/react/24/outline";
+import {MinusCircleIcon} from "@heroicons/react/24/outline";
+import {TrashIcon} from "@heroicons/react/24/outline";
+import Breadcrumbs from "../components/Breadcrumbs.tsx";
+import AddUpdateUserForm from "../components/AddUpdateUserForm.tsx";
 
 const Users = () => {
+    const bredcrumpsRoutes = [{path: '/users', displayName: "Користувачі"}];
     const {setNotification} = useStateContext();
     const [users, setUsers] = useState([]);
+    const [userToUpdate, setUserToUpdate] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [paginationData, setPaginationData] = useState({
         to: 0,
@@ -22,11 +29,13 @@ const Users = () => {
     }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (userId?: number) => {
+        if (userId) setUserToUpdate({id: userId});
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
+        setUserToUpdate(null);
         setIsModalOpen(false);
     };
     const deactivateUser = (userId:number) => {
@@ -78,9 +87,15 @@ const Users = () => {
     }
     const changePage = (page: number) => {
         getUsers(page);
+
+    }
+    const onSubmitform = () => {
+        getUsers();
+        handleCloseModal();
     }
     return (
         <div className="container mx-auto">
+            <Breadcrumbs routes={bredcrumpsRoutes}/>
             {isLoading ?
                 <div className="w-screen h-screen flex justify-center items-center bg-gray-200">
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
@@ -91,7 +106,7 @@ const Users = () => {
                         <h2 className="text-2xl font-bold">Користувачі</h2>
                         <button
                             className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                            onClick={handleOpenModal}
+                            onClick={() => handleOpenModal()}
                         >
                             Додати користувача
                         </button>
@@ -99,8 +114,7 @@ const Users = () => {
                     <div className="container mx-auto mt-10">
 
                         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                            <h2 className="text-xl font-bold">Модальное окно</h2>
-                            <p className="mt-4">Это контент модального окна.</p>
+                            <AddUpdateUserForm user={userToUpdate} onCloseModal={handleCloseModal} onSubmitForm={onSubmitform}/>
                         </Modal>
                     </div>
                     <div className="overflow-x-auto">
@@ -160,36 +174,20 @@ const Users = () => {
                                                 <td className="py-2 px-4 border-b">{user?.user_category === "employee" ? "співробітники" : (user?.user_category === "parent" ? "батьки" : (user?.user_category === "children" ? "діти" : "адмін. персонал"))}</td>
                                                 <td className="py-2 px-4 border-b">
                                                     <button className="text-blue-500 hover:text-blue-700 mr-2"
-                                                            onClick={handleOpenModal}
+                                                            onClick={() => handleOpenModal(user?.user_id)}
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                             viewBox="0 0 24 24"
-                                                             strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                            <path strokeLinecap="round" strokeLinejoin="round"
-                                                                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
-                                                        </svg>
+                                                        <PencilSquareIcon className="w-6"/>
+
                                                     </button>
                                                     <button className="text-red-500 hover:text-red-700"
                                                             onClick={() => deleteUser(user?.user_id)}
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                             viewBox="0 0 24 24"
-                                                             strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                            <path strokeLinecap="round" strokeLinejoin="round"
-                                                                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-                                                        </svg>
-
+                                                        <TrashIcon className="w-6"/>
                                                     </button>
                                                     <button className="text-orange-500 hover:text-red-700"
                                                             onClick={() => deactivateUser(user?.user_id)}
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                             viewBox="0 0 24 24"
-                                                             strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                            <path strokeLinecap="round" strokeLinejoin="round"
-                                                                  d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                                                        </svg>
-
+                                                        <MinusCircleIcon className="w-6"/>
                                                     </button>
                                                 </td>
                                             </tr>

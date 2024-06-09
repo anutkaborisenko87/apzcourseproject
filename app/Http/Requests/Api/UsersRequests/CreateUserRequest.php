@@ -33,7 +33,7 @@ class CreateUserRequest extends FormRequest
             'street' => 'sometimes|string|min:2|max:255',
             'house_number' => 'sometimes|string|min:2|max:255',
             'apartment_number' => 'sometimes|string|min:2|max:255',
-            'birth_date' => 'sometimes|date',
+            'birth_date' => 'sometimes|date|before:now',
         ];
     }
 }

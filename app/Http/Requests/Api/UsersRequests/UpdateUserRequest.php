@@ -34,7 +34,7 @@ class UpdateUserRequest extends FormRequest
             'street' => 'sometimes|nullable',
             'house_number' => 'sometimes|nullable',
             'apartment_number' => 'sometimes|nullable',
-            'birth_date' => 'sometimes|date',
+            'birth_date' => 'sometimes|date|before:now',
         ];
     }
 }

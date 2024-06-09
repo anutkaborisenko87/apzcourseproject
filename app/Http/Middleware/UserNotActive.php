@@ -19,10 +19,10 @@ class UserNotActive
     {
         $user = User::find($request->route('user'));
         if (!$user) {
-            return response(['error' => 'User not found'], 404);
+            return response(['error' => 'Користувача не знайдено'], 404);
         }
         if ($user->active) {
-            return response(['error' => 'User already active'], 401);
+            return response(['error' => 'Користувача вже активовано'], 401);
         }
         return $next($request);
     }

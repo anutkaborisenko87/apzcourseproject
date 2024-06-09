@@ -82,6 +82,17 @@ class UserService implements IUserService
         }
     }
 
+    final public function getUserById(int $userId): array
+    {
+        try {
+            $user = $this->userRepository->getUserById($userId);
+            if (!$user) throw new Exception("Користувача не знайдено");
+            return (new UserResource($user))->resolve();
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
+
     final public function updateUser(int $userId, array $data): array
     {
         try {
@@ -97,7 +108,7 @@ class UserService implements IUserService
                     if ($role->id !== $roleId) {
                         $user->removeRole($role);
                         $newRole = Role::findById($userId);
-                        if (!$newRole) throw new Exception('Role not found');
+                        if (!$newRole) throw new Exception('Роль не знайдено');
                         $user->assignRole($newRole);
                     }
                 }

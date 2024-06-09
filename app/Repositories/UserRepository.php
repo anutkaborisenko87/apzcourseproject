@@ -37,7 +37,7 @@ class UserRepository implements IUserRpository
     {
         try {
             $user = User::find($id);
-            if (!$user) throw new Exception('User not found');
+            if (!$user) throw new Exception('Користувача не знайдено');
             return $user;
         } catch (Exception $exception) {
             throw $exception;
@@ -56,7 +56,7 @@ class UserRepository implements IUserRpository
     final public function updateUser(User $user, array $data): User
     {
         try {
-            if (!$user->update($data)) throw new Exception('Failed update user.');
+            if (!$user->update($data)) throw new Exception('Невдала спроба оновити дані.');
             return $user;
         } catch (Exception $exception) {
             throw $exception;
@@ -65,7 +65,7 @@ class UserRepository implements IUserRpository
     final public function deactivateUser(User $user): User
     {
         try {
-            if (!$user->update(['active' => false])) throw new Exception('Failed update user.');
+            if (!$user->update(['active' => false])) throw new Exception('Невдала спроба оновити дані.');
             return $user;
         } catch (Exception $exception) {
             throw $exception;
@@ -74,7 +74,7 @@ class UserRepository implements IUserRpository
     final public function reactivateUser(User $user): User
     {
         try {
-            if (!$user->update(['active' => true])) throw new Exception('Failed update user.');
+            if (!$user->update(['active' => true])) throw new Exception('Невдала спроба оновити дані.');
             return $user;
         } catch (Exception $exception) {
             throw $exception;
@@ -83,7 +83,7 @@ class UserRepository implements IUserRpository
     final public function deleteUser(User $user): bool
     {
         try {
-            if (!$user->delete()) throw new Exception('Failed update user.');
+            if (!$user->delete()) throw new Exception('Невдала спроба видалити дані.');
             return true;
         } catch (Exception $exception) {
             throw $exception;
