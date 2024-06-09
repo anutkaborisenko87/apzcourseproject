@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -28,6 +29,7 @@ class User extends Authenticatable
         'city',
         'street',
         'house_number',
+        'apartment_number',
         'active',
         'birth_date',
         'birth_year',
@@ -51,4 +53,36 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    final public function userCategory(): string
+    {
+        if (!is_null($this->employee)) {
+            return 'employee';
+        }
+
+        if (!is_null($this->parrent)) {
+            return 'parent';
+        }
+
+        if (!is_null($this->children)) {
+            return 'children';
+        }
+
+        return 'admin';
+    }
+
+    final public function parrent(): HasOne
+    {
+        return $this->hasOne(Parrent::class, 'user_id', 'id');
+    }
+
+    final public function children(): HasOne
+    {
+        return $this->hasOne(Children::class, 'user_id', 'id');
+    }
+
+    final public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, 'user_id', 'id');
+    }
 }

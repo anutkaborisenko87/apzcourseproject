@@ -5,16 +5,97 @@ namespace App\Http\Controllers;
 use OpenApi\Annotations as OA;
 
 /**
- *    @OA\Info(
- *      version="3.0.0",
- *      title="Anna Borisenko Documentation"
- *    ),
- *     @OA\PathItem(
- *         path="/api/"
- *     )
+ * @OA\Info(
+ *     version="3.0.0",
+ *     title="Anna Borisenko Documentation"
+ * ),
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     description="Use a valid Bearer token to access endpoints",
+ *     name="Authorization",
+ *     in="header",
+ * )
+ * @OA\Schema(
+ *      schema="Role",
+ *      type="object",
+ *      @OA\Property(property="id", type="integer", readOnly=true, example=1),
+ *      @OA\Property(property="name", type="string", readOnly=true, example="super_admin")
+ *  )
+ * @OA\Schema(
+ *      schema="Profile",
+ *      required={"id", "name"},
+ *      @OA\Property(
+ *          property="user_id",
+ *          type="integer",
+ *          example=1
+ *      ),
+ *      @OA\Property(
+ *          property="last_name",
+ *          type="string",
+ *          example="Doe"
+ *      ),
+ *      @OA\Property(
+ *          property="first_name",
+ *          type="string",
+ *          example="John"
+ *      ),
+ *      @OA\Property(
+ *          property="patronymic_name",
+ *          type="string",
+ *          example="Paterson"
+ *      ),
+ *      @OA\Property(
+ *          property="email",
+ *          type="string",
+ *          example="email@example.com"
+ *      ),
+ *      @OA\Property(
+ *          property="city",
+ *          type="string",
+ *          example="Example city"
+ *      ),
+ *      @OA\Property(
+ *          property="street",
+ *          type="string",
+ *          example="Example street"
+ *      ),
+ *      @OA\Property(
+ *          property="house_number",
+ *          type="string",
+ *          example="12"
+ *      ),
+ *      @OA\Property(
+ *          property="apartment_number",
+ *          type="string",
+ *          example="12"
+ *      ),
+ *      @OA\Property(
+ *          property="birthdate",
+ *          type="string",
+ *          example="2000-01-01"
+ *      ),
+ *      @OA\Property(
+ *          property="user_category",
+ *          type="string",
+ *          example="employee"
+ *      ),
+ *  )
  * @OA\Post(
  *     path="/login",
- *     tags={"Login"},
+ *     tags={"Auth"},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
  *     @OA\RequestBody(
  *         required=true,
  *         @OA\MediaType(
@@ -35,25 +116,468 @@ use OpenApi\Annotations as OA;
  *         )
  *     ),
  *     @OA\Response(response="200", description="Login successful"),
- *    @OA\Response(
- *      response=401,
- *      description="Unauthorized",
- *      @OA\JsonContent(
- *          oneOf={
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             oneOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="error", type="string", example="Invalid credentials"),
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="error", type="string", example="Blocked User"),
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="error", type="string", example="You do not have access rights"),
+ *                 )
+ *             }
+ *         )
+ *     )
+ * )
+ * @OA\Get(
+ *     path="/logout",
+ *     tags={"Auth"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Logged out successfully",
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *     )
+ * )
+ * @OA\Get(
+ *     path="/logged_user",
+ *     tags={"Auth"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Logged in user profile",
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *     )
+ * )
+ * @OA\Get(
+ *      path="/user/profile",
+ *      tags={"Profile"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="User Profile",
+ *          @OA\JsonContent(ref="#/components/schemas/Profile")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Error: Bad Request",
+ *          @OA\JsonContent(
+ *               type="object",
+ *               @OA\Property(property="error", type="string", example="Error message")
+ *          )
+ *      ),
+ *  )
+ * @OA\Get(
+ *      path="/users/active",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *           name="page",
+ *           in="query",
+ *           description="The page number to retrieve.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="integer",
+ *               format="int32"
+ *           )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Active userslist "
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Error: Bad Request",
+ *          @OA\JsonContent(
+ *               type="object",
+ *               @OA\Property(property="error", type="string", example="Error message")
+ *          )
+ *      ),
+ *  )
+ * @OA\Get(
+ *      path="/users/not_active",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *           name="page",
+ *           in="query",
+ *           description="The page number to retrieve.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="integer",
+ *               format="int32"
+ *           )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Active userslist "
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Error: Bad Request",
+ *          @OA\JsonContent(
+ *               type="object",
+ *               @OA\Property(property="error", type="string", example="Error message")
+ *          )
+ *      ),
+ *  )
+ * @OA\Post(
+ *      path="/users/create",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\RequestBody(
+ *          required=true,
+ *          @OA\MediaType(
+ *              mediaType="application/json",
  *              @OA\Schema(
- *                  @OA\Property(property="message", type="string", example="Invalid credentials"),
- *              ),
- *              @OA\Schema(
- *                  @OA\Property(property="message", type="string", example="Blocked User"),
- *              ),
- *              @OA\Schema(
- *                  @OA\Property(property="message", type="string", example="You do not have access rights"),
+ *                  type="object",
+ *                  required={"last_name", "first_name"},
+ *                  @OA\Property(
+ *                      property="last_name",
+ *                      type="string",
+ *                      example="Lastname"
+ *                  ),
+ *                  @OA\Property(
+ *                      property="first_name",
+ *                      type="string",
+ *                      example="Firstname"
+ *                  ),
+ *                  @OA\Property(
+ *                      property="patronymic_name",
+ *                      type="string",
+ *                      example="Patronymicname"
+ *                  ),
+ *                  @OA\Property(
+ *                      property="role",
+ *                      ref="#/components/schemas/Role"
+ *                  ),
+ *                   @OA\Property(
+ *                       property="email",
+ *                       type="string",
+ *                       example="email@example.com"
+ *                   ),
+ *                   @OA\Property(
+ *                       property="city",
+ *                       type="string",
+ *                       example="ExampleCity"
+ *                   ),
+ *                   @OA\Property(
+ *                       property="street",
+ *                       type="string",
+ *                       example="ExampleStreet"
+ *                   ),
+ *                   @OA\Property(
+ *                       property="house_number",
+ *                       type="string",
+ *                       example="12"
+ *                   ),
+ *                   @OA\Property(
+ *                       property="apartment_number",
+ *                       type="string",
+ *                       example="12"
+ *                   ),
+ *                   @OA\Property(
+ *                       property="birth_date",
+ *                       type="string",
+ *                       format="date",
+ *                       example="2000-01-01"
+ *                   )
  *              )
- *          }
+ *          )
+ *      ),
+ *      @OA\Response(response="200", description="Login successful"),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthorized"
  *      )
  *  )
- * )
+ * @OA\Put(
+ *      path="/users/{userId}/update",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\Parameter(
+ *          name="userId",
+ *          in="path",
+ *          required=true,
+ *          description="User ID to update",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *      @OA\RequestBody(
+ *            required=true,
+ *            @OA\MediaType(
+ *                mediaType="application/json",
+ *                @OA\Schema(
+ *                    type="object",
+ *                    required={"last_name", "first_name"},
+ *                    @OA\Property(
+ *                        property="last_name",
+ *                        type="string",
+ *                        example="Lastname"
+ *                    ),
+ *                    @OA\Property(
+ *                        property="first_name",
+ *                        type="string",
+ *                        example="Firstname"
+ *                    ),
+ *                    @OA\Property(
+ *                        property="patronymic_name",
+ *                        type="string",
+ *                        example="Patronymicname"
+ *                    ),
+ *                    @OA\Property(
+ *                        property="role",
+ *                        ref="#/components/schemas/Role"
+ *                    ),
+ *                     @OA\Property(
+ *                         property="email",
+ *                         type="string",
+ *                         example="email@example.com"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="city",
+ *                         type="string",
+ *                         example="ExampleCity"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="street",
+ *                         type="string",
+ *                         example="ExampleStreet"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="house_number",
+ *                         type="string",
+ *                         example="12"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="apartment_number",
+ *                         type="string",
+ *                         example="12"
+ *                     ),
+ *                     @OA\Property(
+ *                         property="birth_date",
+ *                         type="string",
+ *                         format="date",
+ *                         example="2000-01-01"
+ *                     )
+ *                )
+ *            )
+ *        ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(ref="#/components/schemas/Profile")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unathorized"
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Bad request"
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="User not found"
+ *      )
+ *  )
+ * @OA\Delete(
+ *      path="/users/{userId}/delete",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\Parameter(
+ *          name="userId",
+ *          in="path",
+ *          required=true,
+ *          description="User ID to update",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(ref="#/components/schemas/Profile")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unathorized"
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Bad request"
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="User not found"
+ *      )
+ *  )
+ * @OA\Get(
+ *      path="/users/{userId}/reactivate",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\Parameter(
+ *          name="userId",
+ *          in="path",
+ *          required=true,
+ *          description="User ID to update",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(ref="#/components/schemas/Profile")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unathorized"
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Bad request"
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="User not found"
+ *      )
+ *  )
+ * @OA\Get(
+ *      path="/users/{userId}/deactivate",
+ *      tags={"Users"},
+ *      security={{"bearerAuth":{}}},
+ *     @OA\Parameter(
+ *          name="Accept",
+ *          in="header",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              default="application/json"
+ *          )
+ *      ),
+ *      @OA\Parameter(
+ *          name="userId",
+ *          in="path",
+ *          required=true,
+ *          description="User ID to update",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(ref="#/components/schemas/Profile")
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unathorized"
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Bad request"
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="User not found"
+ *      )
+ *  )
  */
+
 class SwaggerAnnotationsController extends Controller
 {
 

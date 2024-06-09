@@ -1,4 +1,43 @@
+import {useState} from "react";
+import axiosClient from "../axios-client.ts";
+import {useStateContext} from "../../contexts/ContextProvider.tsx";
+
 const Login = () => {
+    const [credentials, setCredentials] = useState( {email: '', password: ''})
+    const {setUser, setToken} = useStateContext();
+    const [errors, setErrors] = useState({ email: [], password: [] });
+    const [allertError, setAllertError] = useState('');
+    const clearErrors = (field: string) => {
+        setAllertError('');
+        setErrors({ ...errors, [field]: [] });
+    };
+    const onSubmit = (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        const payload = credentials;
+        axiosClient.post('/login', payload)
+            .then(({data}) => {
+                console.log('data', data)
+                setUser(data.user);
+                setToken(data.access_token)
+
+            })
+            .catch(error => {
+                const resp = error.response
+                console.log(resp)
+                if (resp && resp.status === 422) {
+                    const {email, password} = resp.data.errors;
+                    setErrors(prevErrors => ({
+                        ...prevErrors,
+                        ...(email ? {email} : {}),
+                        ...(password ? {password} : {})
+                    }));
+                }
+                if (resp && resp.status === 401) {
+                    const {error} = resp.data;
+                    setAllertError(error);
+                }
+            })
+    }
 
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -6,16 +45,36 @@ const Login = () => {
                 <img className="mx-auto h-16 w-auto" src="/logo.png" alt="Your Company"/>
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Авторизуйтесь</h2>
             </div>
+            {allertError !== '' ?
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                    <p className="font-bold">Error!</p>
+                    <p>{allertError}</p>
+                </div>
+                : ''
+
+            }
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form className="space-y-6" action="#" method="POST">
+                <form onSubmit={onSubmit} className="space-y-6" action="#" method="POST">
                     <div>
-                        <label htmlFor="email"
+                    <label htmlFor="email"
                                className="block text-sm font-medium leading-6 text-gray-900">Email</label>
                         <div className="mt-2">
-                            <input id="email" name="email" type="email" required
-                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                            <input id="email" name="email" type="email"
+                                   value={credentials.email}
+                                   onChange={e => {
+                                       clearErrors('email');
+                                       setCredentials(credentials => ({...credentials, email: e.target.value}));
+                                   }}
+                                   className={`block w-full rounded-md border-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.email?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'}`}/>
                         </div>
+                        {errors.email.length > 0 && (
+                            <div className="text-red-500 text-xs">
+                                {errors.email.map((error, index) => (
+                                    <p key={index}>{error}</p>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -23,9 +82,21 @@ const Login = () => {
                                className="block text-sm font-medium leading-6 text-gray-900">Пароль</label>
 
                         <div className="mt-2">
-                            <input id="password" name="password" type="password" required
-                                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+                            <input id="password" name="password" type="password"
+                                   value={credentials.password}
+                                   onChange={e => {
+                                       clearErrors('password');
+                                       setCredentials(credentials => ({...credentials, password: e.target.value}));
+                                   }}
+                                   className={`block w-full rounded-md border-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 sm:text-sm sm:leading-6 ${errors.password?.length > 0 ? 'border-red-600 focus:border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-indigo-600'}`}/>
                         </div>
+                        {errors.password.length > 0 && (
+                            <div className="text-red-500 text-xs">
+                                {errors.password.map((error, index) => (
+                                    <p key={index}>{error}</p>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div>

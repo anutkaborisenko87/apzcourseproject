@@ -1,25 +1,30 @@
 import {createContext, ReactNode, useContext, useState} from "react";
 type UserType = {
-    // id: number;
+    id: number;
     name: string;
-    // другие свойства...
+    email: string;
+    role: string;
 }
 type StateContextType = {
     currentUser: UserType | null,
     token: string | null,
-    setUser: (value: unknown) => void,
-    setToken: (value: unknown) => void
+    notification: {type: string, message: string},
+    setUser: (value: UserType) => void,
+    setToken: (value: string) => void
 }
 const StateContext = createContext<StateContextType>({
     currentUser: null,
     token: null,
+    notification: {type: '', message: ''},
     setUser: () => {},
-    setToken: () => {}
+    setToken: () => {},
+    setNotification: () => {},
 });
 
 
 export const ContextProvider = ({children}: { children: ReactNode }) => {
-    const [user, setUser] = useState<UserType | null>({name: 'Test'});
+    const [user, setUser] = useState<UserType | null>(null);
+    const [notification, _setNotification] = useState({type: '', message: ''})
     const [token, _setToken] = useState(localStorage.getItem('react_front_access_token'));
     const setToken = (token: string) => {
         _setToken(token);
@@ -30,12 +35,20 @@ export const ContextProvider = ({children}: { children: ReactNode }) => {
         }
 
     }
+    const setNotification = ({type, message}: {type: string, message: string}) => {
+        _setNotification({type, message});
+        setTimeout(() => {
+            _setNotification({type: '', message: ''});
+        }, 5000)
+    }
     return (
         <StateContext.Provider value={{
             user,
             token,
+            notification,
             setUser,
-            setToken
+            setToken,
+            setNotification
 
         }}>
             {children}
