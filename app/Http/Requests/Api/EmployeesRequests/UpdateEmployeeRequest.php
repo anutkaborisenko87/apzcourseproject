@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\EmployeesRequests;
 
+use App\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEmployeeRequest extends FormRequest
@@ -23,11 +24,12 @@ class UpdateEmployeeRequest extends FormRequest
      */
     final public function rules(): array
     {
+        $employee = Employee::find((int) $this->route('employee'));
         return [
             'user.last_name' => 'sometimes|string|min:2|max:255',
             'user.first_name' => 'sometimes|string|min:2|max:255',
             'user.patronymic_name' => 'sometimes|string|min:2|max:255',
-            'user.email' => 'sometimes|email:rfc,dns|unique:users,email',
+            'user.email' => 'sometimes|email:rfc,dns|unique:users,email,' . $employee->user_id,
             'user.city' => 'sometimes|string|min:2|max:255',
             'user.street' => 'sometimes|string|min:2|max:255',
             'user.house_number' => 'sometimes|string|min:2|max:255',

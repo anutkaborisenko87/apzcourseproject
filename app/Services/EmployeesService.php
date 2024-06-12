@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Http\Resources\TeacherResource;
+use App\Http\Resources\EmployeeResource;
 use App\Interfaces\ServicesInterfaces\IEmployeesService;
 use App\Repositories\EmployeesRepository;
 use App\Repositories\UserRepository;
@@ -25,7 +25,7 @@ class EmployeesService implements IEmployeesService
         try {
             $teachers = $this->teacherRepository->getAllActiveEmployees();
             $respData = $teachers->toArray();
-            $respData['data'] = TeacherResource::collection($teachers->getCollection())->resolve();
+            $respData['data'] = EmployeeResource::collection($teachers->getCollection())->resolve();
             return $respData;
         } catch (Exception $exception) {
             throw $exception;
@@ -38,7 +38,7 @@ class EmployeesService implements IEmployeesService
         try {
             $teachers = $this->teacherRepository->getAllNotActiveEmployees();
             $respData = $teachers->toArray();
-            $respData['data'] = TeacherResource::collection($teachers->getCollection())->resolve();
+            $respData['data'] = EmployeeResource::collection($teachers->getCollection())->resolve();
             return $respData;
         } catch (Exception $exception) {
             throw $exception;
@@ -50,7 +50,7 @@ class EmployeesService implements IEmployeesService
         try {
             $teachers = $this->teacherRepository->getAllWorkingEmployees();
             $respData = $teachers->toArray();
-            $respData['data'] = TeacherResource::collection($teachers->getCollection())->resolve();
+            $respData['data'] = EmployeeResource::collection($teachers->getCollection())->resolve();
             return $respData;
         } catch (Exception $exception) {
             throw $exception;
@@ -75,7 +75,7 @@ class EmployeesService implements IEmployeesService
                 $this->userRepository->deleteUser($createdUser);
                 throw new Exception("Помилка створення вчителя");
             }
-            return (new TeacherResource($createdEmployee))->resolve();
+            return (new EmployeeResource($createdEmployee))->resolve();
 
         } catch (Exception $exception) {
             throw $exception;
@@ -86,8 +86,8 @@ class EmployeesService implements IEmployeesService
     {
         try {
             $teacher = $this->teacherRepository->getEmployeeById($id);
-            if (!$teacher) throw new Exception("Вчитель не знайдений");
-            return (new TeacherResource($teacher))->resolve();
+            if (!$teacher) throw new Exception("Співробітник не знайдений");
+            return (new EmployeeResource($teacher))->resolve();
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -97,14 +97,14 @@ class EmployeesService implements IEmployeesService
     {
         try {
             $teacher = $this->teacherRepository->getEmployeeById($id);
-            if (!$teacher) throw new Exception("Вчитель не знайдений");
+            if (!$teacher) throw new Exception("Співробітник не знайдений");
             if (isset($data['user'])) {
                 $updatedUser = $this->userRepository->updateUser($teacher->user, $data['user']);
                 if (!$updatedUser) throw new Exception("Помилка оновлення користувача");
             }
             $updatedEmployee = $this->teacherRepository->updateEmployee($teacher, $data['employee']);
             if (!$updatedEmployee) throw new Exception("Помилка оновлення вчителя");
-            return (new TeacherResource($updatedEmployee))->resolve();
+            return (new EmployeeResource($updatedEmployee))->resolve();
 
         } catch (Exception $exception) {
             throw $exception;
@@ -115,8 +115,8 @@ class EmployeesService implements IEmployeesService
     {
         try {
             $teacher = $this->teacherRepository->getEmployeeById($id);
-            if (!$teacher) throw new Exception("Вчитель не знайдений");
-            $teacherResp = (new TeacherResource($teacher))->resolve();
+            if (!$teacher) throw new Exception("Співробітник не знайдений");
+            $teacherResp = (new EmployeeResource($teacher))->resolve();
             $deletedUser = $this->userRepository->deleteUser($teacher->user);
             if (!$deletedUser) throw new Exception("Помилка видалення вчителя");
             return ['success' => true, 'teacher' => $teacherResp];
@@ -129,10 +129,10 @@ class EmployeesService implements IEmployeesService
     {
         try {
             $teacher = $this->teacherRepository->getEmployeeById($id);
-            if (!$teacher) throw new Exception("Вчитель не знайдений");
+            if (!$teacher) throw new Exception("Співробітник не знайдений");
             $userDeactivated = $this->userRepository->deactivateUser($teacher->user);
             if (!$userDeactivated) throw new Exception("Помилка деактивації вчителя");
-            return (new TeacherResource($teacher))->resolve();
+            return (new EmployeeResource($teacher))->resolve();
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -142,10 +142,10 @@ class EmployeesService implements IEmployeesService
     {
         try {
             $teacher = $this->teacherRepository->getEmployeeById($id);
-            if (!$teacher) throw new Exception("Вчитель не знайдений");
+            if (!$teacher) throw new Exception("Співробітник не знайдений");
             $userDeactivated = $this->userRepository->reactivateUser($teacher->user);
             if (!$userDeactivated) throw new Exception("Помилка реактивації вчителя");
-            return (new TeacherResource($teacher))->resolve();
+            return (new EmployeeResource($teacher))->resolve();
         } catch (Exception $exception) {
             throw $exception;
         }

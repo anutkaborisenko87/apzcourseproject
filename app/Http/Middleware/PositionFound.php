@@ -3,11 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Models\Employee;
+use App\Models\Position;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 
-class EmployeeFound
+class PositionFound
 {
     /**
      * Handle an incoming request.
@@ -18,9 +19,9 @@ class EmployeeFound
      */
     public function handle(Request $request, Closure $next)
     {
-        $employee = Employee::find($request->route('employee'));
-        if (!$employee) {
-               return response(['error' => 'Співробітника не знайдено'], 404);
+        $position = Position::find($request->route('position'));
+        if (!$position) {
+               return response(['error' => 'Позицію не знайдено'], 404);
             }
         return $next($request);
     }

@@ -97,4 +97,14 @@ class EmployeesController extends Controller
         }
 
     }
+
+    final public function showEmployee(int $emoployeeId): Response
+    {
+        try {
+            return response($this->employeeService->showEmployeeInfo($emoployeeId));
+        } catch (Exception $exception) {
+            return response(['error' => $exception->getMessage()], 400);
+        }
+
+    }
 }

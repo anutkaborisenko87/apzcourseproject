@@ -652,7 +652,7 @@ use OpenApi\Annotations as OA;
  *       ),
  *       @OA\Response(
  *           response=200,
- *           description="Active teachers list "
+ *           description="Active employees list "
  *       ),
  *       @OA\Response(
  *           response=401,
@@ -688,7 +688,7 @@ use OpenApi\Annotations as OA;
  *       ),
  *       @OA\Response(
  *           response=200,
- *           description="Not active teachers list "
+ *           description="Not active employees list "
  *       ),
  *       @OA\Response(
  *           response=401,
@@ -724,7 +724,7 @@ use OpenApi\Annotations as OA;
  *       ),
  *       @OA\Response(
  *           response=200,
- *           description="Not active teachers list "
+ *           description="Not active employees list "
  *       ),
  *       @OA\Response(
  *           response=401,
@@ -734,6 +734,40 @@ use OpenApi\Annotations as OA;
  *                @OA\Property(property="error", type="string", example="Error message")
  *           )
  *       ),
+ *   )
+ * @OA\Get(
+ *       path="/employees/{employeeId}",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="employeeId",
+ *           in="path",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="User not found"
+ *       )
  *   )
  * @OA\Get(
  *       path="/employees/{employeeId}/reactivate",
@@ -752,15 +786,13 @@ use OpenApi\Annotations as OA;
  *           name="employeeId",
  *           in="path",
  *           required=true,
- *           description="User ID to update",
  *           @OA\Schema(
  *               type="integer"
  *           )
  *       ),
  *       @OA\Response(
  *           response=200,
- *           description="Successful operation",
- *           @OA\JsonContent(ref="#/components/schemas/Profile")
+ *           description="Successful operation"
  *       ),
  *       @OA\Response(
  *           response=401,
@@ -799,8 +831,7 @@ use OpenApi\Annotations as OA;
  *       ),
  *       @OA\Response(
  *           response=200,
- *           description="Successful operation",
- *           @OA\JsonContent(ref="#/components/schemas/Profile")
+ *           description="Successful operation"
  *       ),
  *       @OA\Response(
  *           response=401,
@@ -939,7 +970,7 @@ use OpenApi\Annotations as OA;
  *               )
  *           )
  *       ),
- *       @OA\Response(response="200", description="Login successful"),
+ *       @OA\Response(response="200", description="Successful operation"),
  *       @OA\Response(
  *           response=401,
  *           description="Unauthorized"
@@ -1078,7 +1109,7 @@ use OpenApi\Annotations as OA;
  *               )
  *           )
  *       ),
- *       @OA\Response(response="200", description="Login successful"),
+ *       @OA\Response(response="200", description="Successful operation"),
  *       @OA\Response(
  *           response=401,
  *           description="Unauthorized"
@@ -1108,8 +1139,7 @@ use OpenApi\Annotations as OA;
  *       ),
  *       @OA\Response(
  *           response=200,
- *           description="Successful operation",
- *           @OA\JsonContent(ref="#/components/schemas/Profile")
+ *           description="Successful operation"
  *       ),
  *       @OA\Response(
  *           response=401,
@@ -1122,6 +1152,166 @@ use OpenApi\Annotations as OA;
  *       @OA\Response(
  *           response=404,
  *           description="User not found"
+ *       )
+ *   )
+ * @OA\Get(
+ *       path="/positions",
+ *       tags={"Positions"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       )
+ *   )
+ * @OA\Get(
+ *       path="/positions/{positionId}",
+ *       tags={"Positions"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="positionId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       )
+ *   )
+ * @OA\Post(
+ *       path="/positions/create",
+ *       tags={"Positions"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   type="object",
+ *                   required={"position_title"},
+ *                   @OA\Property(
+ *                        property="position_title",
+ *                        type="string"
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ * @OA\Put(
+ *       path="/positions/{positionId}/update",
+ *       tags={"Positions"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *     @OA\Parameter(
+ *           name="positionId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   type="object",
+ *                   required={"position_title"},
+ *                   @OA\Property(
+ *                        property="position_title",
+ *                        type="string"
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ * @OA\Delete(
+ *       path="/positions/{positionId}/delete",
+ *       tags={"Positions"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="positionId",
+ *           in="path",
+ *           required=true,
+ *           description="Employee ID to delete",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
  *       )
  *   )
  */

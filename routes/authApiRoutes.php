@@ -26,6 +26,7 @@ Route::middleware(['is_admin'])
                 Route::delete('/delete', 'destroy');
             });
     });
+
 Route::middleware(['is_admin'])
     ->controller(\App\Http\Controllers\Api\EmployeesController::class)
     ->prefix('/employees')
@@ -38,8 +39,25 @@ Route::middleware(['is_admin'])
             ->prefix('/{employee}')
             ->where(['employee' => '[0-9]+'])
             ->group(function () {
+                Route::get('/', 'showEmployee');
                 Route::get('/reactivate', 'reactivateEmployee')->middleware(['employee_not_active']);
                 Route::get('/deactivate', 'deactivateEmployee')->middleware(['employee_active']);
+                Route::put('/update', 'update');
+                Route::delete('/delete', 'destroy');
+            });
+    });
+
+Route::middleware(['is_admin'])
+    ->controller(\App\Http\Controllers\Api\PositionsController::class)
+    ->prefix('/positions')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::post('/create', 'store');
+        Route::middleware(['position_exists'])
+            ->prefix('/{position}')
+            ->where(['position' => '[0-9]+'])
+            ->group(function () {
+                Route::get('/', 'show');
                 Route::put('/update', 'update');
                 Route::delete('/delete', 'destroy');
             });
