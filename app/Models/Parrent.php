@@ -20,7 +20,7 @@ class Parrent extends User
 
     final public function children_relations(): BelongsToMany
     {
-        return $this->belongsToMany(Children::class, 'child_parent_relations', 'parrent_id', 'child_id');
+        return $this->belongsToMany(Children::class, 'child_parent_relations', 'parrent_id', 'child_id')->withPivot('relations');
     }
 
     final public function visited_parental_events(): BelongsToMany

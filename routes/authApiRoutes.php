@@ -62,3 +62,23 @@ Route::middleware(['is_admin'])
                 Route::delete('/delete', 'destroy');
             });
     });
+
+Route::middleware(['is_admin'])
+    ->controller(\App\Http\Controllers\Api\ParrentsController::class)
+    ->prefix('/parrents')
+    ->group(function () {
+        Route::get('/for-select', 'indexForSelect');
+        Route::get('/active', 'indexActive');
+        Route::get('/not-active', 'indexNotActive');
+        Route::post('/create', 'store');
+        Route::middleware(['parrent_exists'])
+            ->prefix('/{parrent}')
+            ->where(['parrent' => '[0-9]+'])
+            ->group(function () {
+                Route::get('/', 'show');
+                Route::get('/deactivate', 'deactivate')->middleware(['parrent_active']);
+                Route::get('/reactivate', 'reactivate')->middleware(['parrent_not_active']);
+                Route::put('/update', 'update');
+                Route::delete('/delete', 'destroy');
+            });
+    });

@@ -1155,6 +1155,380 @@ use OpenApi\Annotations as OA;
  *       )
  *   )
  * @OA\Get(
+ *       path="/parrents/for-select",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Not active parents list "
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
+ *       path="/parrents/active",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *            name="page",
+ *            in="query",
+ *            description="The page number to retrieve.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32"
+ *            )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
+ *       path="/parrents/not-active",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *            name="page",
+ *            in="query",
+ *            description="The page number to retrieve.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32"
+ *            )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
+ *       path="/parrents/{parrentId}",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="parrentId",
+ *           in="path",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="Parent not found"
+ *       )
+ *   )
+ * @OA\Get(
+ *       path="/parrents/{parrentId}/reactivate",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="parrentId",
+ *           in="path",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=403,
+ *           description="Bad request"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="User not found"
+ *       )
+ *   )
+ * @OA\Get(
+ *       path="/parrents/{parrentId}/deactivate",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\Parameter(
+ *           name="parrentId",
+ *           in="path",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Successful operation"
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unathorized"
+ *       ),
+ *       @OA\Response(
+ *           response=403,
+ *           description="Bad request"
+ *       ),
+ *       @OA\Response(
+ *           response=404,
+ *           description="User not found"
+ *       )
+ *   )
+ * @OA\Post(
+ *     path="/parrents/create",
+ *     tags={"Parents"},
+ *     security={{"bearerAuth":{}}},
+ *    @OA\Parameter(
+ *         name="Accept",
+ *         in="header",
+ *         required=true,
+ *         @OA\Schema(
+ *             type="string",
+ *             default="application/json"
+ *         )
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\MediaType(
+ *             mediaType="application/json",
+ *             @OA\Schema(
+ *                 schema="UserParentSchema",
+ *                 type="object",
+ *                 @OA\Property(
+ *                     property="user",
+ *                     type="object",
+ *                     @OA\Property(property="last_name", type="string", description="User's last name"),
+ *                     @OA\Property(property="first_name", type="string", description="User's first name"),
+ *                     @OA\Property(property="patronymic_name", type="string", description="User's patronymic name"),
+ *                     @OA\Property(property="email", type="string", format="email", description="User's email"),
+ *                     @OA\Property(property="city", type="string", description="User's city"),
+ *                     @OA\Property(property="street", type="string", description="User's street"),
+ *                     @OA\Property(property="house_number", type="string", description="User's house number"),
+ *                     @OA\Property(property="apartment_number", type="string", description="User's apartment number"),
+ *                     @OA\Property(property="birth_date", type="string", format="date", description="User's birthdate")
+ *                 ),
+ *                 @OA\Property(
+ *                     property="parrent",
+ *                     type="object",
+ *                     @OA\Property(property="phone", type="string", description="Parent's phone"),
+ *                     @OA\Property(property="work_place", type="string", description="Parent's working place"),
+ *                     @OA\Property(property="passport_data", type="string", description="Parent's passport data"),
+ *                     @OA\Property(property="marital_status", type="string", description="Parent's marital status"),
+ *                     @OA\Property(
+ *                       property="children",
+ *                       type="array",
+ *                       @OA\Items(
+ *                         type="object",
+ *                         @OA\Property(property="child_id", type="integer", description="Child's id"),
+ *                         @OA\Property(property="relations", type="string", description="Relations")
+ *                       )
+ *                     )
+ *                  )
+ *              )
+ *         )
+ *     ),
+ *     @OA\Response(response="200", description="Successful operation"),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized"
+ *     )
+ * )
+ * @OA\Put(
+ *       path="/parrents/{parrentId}/update",
+ *       tags={"Parents"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *     @OA\Parameter(
+ *           name="parrentId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *         @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   schema="UserParentSchema",
+ *                   type="object",
+ *                   @OA\Property(
+ *                       property="user",
+ *                       type="object",
+ *                       @OA\Property(property="last_name", type="string", description="User's last name"),
+ *                       @OA\Property(property="first_name", type="string", description="User's first name"),
+ *                       @OA\Property(property="patronymic_name", type="string", description="User's patronymic name"),
+ *                       @OA\Property(property="email", type="string", format="email", description="User's email"),
+ *                       @OA\Property(property="city", type="string", description="User's city"),
+ *                       @OA\Property(property="street", type="string", description="User's street"),
+ *                       @OA\Property(property="house_number", type="string", description="User's house number"),
+ *                       @OA\Property(property="apartment_number", type="string", description="User's apartment number"),
+ *                       @OA\Property(property="birth_date", type="string", format="date", description="User's birthdate")
+ *                   ),
+ *                   @OA\Property(
+ *                       property="parrent",
+ *                       type="object",
+ *                       @OA\Property(property="phone", type="string", description="Parent's phone"),
+ *                       @OA\Property(property="work_place", type="string", description="Parent's working place"),
+ *                       @OA\Property(property="passport_data", type="string", description="Parent's passport data"),
+ *                       @OA\Property(property="marital_status", type="string", description="Parent's marital status"),
+ *                       @OA\Property(
+ *                         property="children",
+ *                         type="array",
+ *                         @OA\Items(
+ *                           type="object",
+ *                           @OA\Property(property="child_id", type="integer", description="Child's id"),
+ *                           @OA\Property(property="relations", type="string", description="Relations")
+ *                         )
+ *                       )
+ *                    )
+ *                )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ *  @OA\Delete(
+ *        path="/parrents/{parrentId}/delete",
+ *        tags={"Parents"},
+ *        security={{"bearerAuth":{}}},
+ *       @OA\Parameter(
+ *            name="Accept",
+ *            in="header",
+ *            required=true,
+ *            @OA\Schema(
+ *                type="string",
+ *                default="application/json"
+ *            )
+ *        ),
+ *        @OA\Parameter(
+ *            name="parrentId",
+ *            in="path",
+ *            required=true,
+ *            description="Employee ID to delete",
+ *            @OA\Schema(
+ *                type="integer"
+ *            )
+ *        ),
+ *        @OA\Response(
+ *            response=200,
+ *            description="Successful operation"
+ *        ),
+ *        @OA\Response(
+ *            response=401,
+ *            description="Unathorized"
+ *        ),
+ *        @OA\Response(
+ *            response=403,
+ *            description="Bad request"
+ *        ),
+ *        @OA\Response(
+ *            response=404,
+ *            description="User not found"
+ *        )
+ *    )
+ * @OA\Get(
  *       path="/positions",
  *       tags={"Positions"},
  *       security={{"bearerAuth":{}}},
@@ -1315,7 +1689,6 @@ use OpenApi\Annotations as OA;
  *       )
  *   )
  */
-
 class SwaggerAnnotationsController extends Controller
 {
 

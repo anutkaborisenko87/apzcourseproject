@@ -67,9 +67,12 @@ class Kernel extends HttpKernel
         'user_exists' => \App\Http\Middleware\UserFound::class,
         'employee_exists' => \App\Http\Middleware\EmployeeFound::class,
         'position_exists' => \App\Http\Middleware\PositionFound::class,
+        'parrent_exists' => \App\Http\Middleware\ParrentFound::class,
         'user_active' => \App\Http\Middleware\UserActive::class,
         'employee_active' => \App\Http\Middleware\EmployeeActive::class,
         'user_not_active' => \App\Http\Middleware\UserNotActive::class,
+        'parrent_not_active' => \App\Http\Middleware\ParrentNotActive::class,
+        'parrent_active' => \App\Http\Middleware\ParrentActive::class,
         'employee_not_active' => \App\Http\Middleware\EmployeeNotActive::class,
         'json_resp' => \App\Http\Middleware\ForceJsonResponse::class,
     ];
