@@ -88,15 +88,15 @@ class ParrentsRepository implements IParrentsRepository
     final public function updateParrent(Parrent $parrent, array $data): Parrent
     {
         try {
+            $syncData = [];
             if (isset($data['children'])) {
                 $relationsData = $data['children'];
-                $syncData = [];
                 array_walk($relationsData, function ($item) use (&$relationsData, &$syncData) {
                     $syncData[$item['child_id']] = ['relations' => $item['relations']];
                 });
-                $parrent->children_relations()->sync($syncData);
                 unset($data['children']);
             }
+            $parrent->children_relations()->sync($syncData);
             if (!$parrent->update($data)) throw new Exception('Помилка оновлення інформації про батька');
             return $parrent;
         } catch (Exception $exception) {

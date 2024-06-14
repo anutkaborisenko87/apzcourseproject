@@ -82,3 +82,10 @@ Route::middleware(['is_admin'])
                 Route::delete('/delete', 'destroy');
             });
     });
+
+Route::middleware(['is_admin'])
+    ->controller(\App\Http\Controllers\Api\ChildrenController::class)
+    ->prefix('/children')
+    ->group(function () {
+        Route::get('/for-select', 'indexForSelect');
+    });

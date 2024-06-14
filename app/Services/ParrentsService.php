@@ -89,7 +89,7 @@ class ParrentsService implements IParrentsService
     {
         try {
             $userData = $data['user'];
-            $parrentData = $data['parrent'];
+            $parrentData = isset($data['parrent']) ? $data['parrent'] : [];
             $newUser = $this->userRepository->createUser($userData);
             if (!$newUser) throw new Exception('Помилка створення користувача');
             $parrentData['user_id'] = $newUser->id;

@@ -1688,6 +1688,32 @@ use OpenApi\Annotations as OA;
  *           description="Unathorized"
  *       )
  *   )
+ * @OA\Get(
+ *        path="/children/for-select",
+ *        tags={"Children"},
+ *        security={{"bearerAuth":{}}},
+ *       @OA\Parameter(
+ *            name="Accept",
+ *            in="header",
+ *            required=true,
+ *            @OA\Schema(
+ *                type="string",
+ *                default="application/json"
+ *            )
+ *        ),
+ *        @OA\Response(
+ *            response=200,
+ *            description="Successful operation"
+ *        ),
+ *        @OA\Response(
+ *            response=401,
+ *            description="Error: Bad Request",
+ *            @OA\JsonContent(
+ *                 type="object",
+ *                 @OA\Property(property="error", type="string", example="Error message")
+ *            )
+ *        ),
+ *    )
  */
 class SwaggerAnnotationsController extends Controller
 {
