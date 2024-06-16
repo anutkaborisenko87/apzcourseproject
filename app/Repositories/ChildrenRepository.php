@@ -22,4 +22,18 @@ class ChildrenRepository implements IChildrenRepository
             throw $exception;
         }
     }
+
+    final public function getChildrenForUpdateSelect(int $parrentId): Collection
+    {
+        try {
+            $children = Children::whereHas('user', function ($query) use ($parrentId) {
+                $query->where('active', true);
+            })->whereDoesntHave('parrent_relations', function ($query) use ($parrentId) {
+                $query->where('parrent_id', $parrentId);
+            })->get();
+            return $children;
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
 }

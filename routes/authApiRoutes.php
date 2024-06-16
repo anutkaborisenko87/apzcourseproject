@@ -40,6 +40,7 @@ Route::middleware(['is_admin'])
             ->where(['employee' => '[0-9]+'])
             ->group(function () {
                 Route::get('/', 'showEmployee');
+                Route::post('/fire-employee', 'fireEmployee')->middleware(['employee_hired']);
                 Route::get('/reactivate', 'reactivateEmployee')->middleware(['employee_not_active']);
                 Route::get('/deactivate', 'deactivateEmployee')->middleware(['employee_active']);
                 Route::put('/update', 'update');
@@ -88,4 +89,5 @@ Route::middleware(['is_admin'])
     ->prefix('/children')
     ->group(function () {
         Route::get('/for-select', 'indexForSelect');
+        Route::get('/for-select/{parrent}', 'indexForUpdateSelect')->where(['parrent' => '[0-9]+']);
     });

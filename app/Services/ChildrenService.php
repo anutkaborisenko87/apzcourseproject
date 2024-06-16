@@ -23,4 +23,13 @@ class ChildrenService implements IChildrenService
             throw $exception;
         }
     }
+
+    final public function childrenForUpdateSelectList(int $parrenId): array
+    {
+        try {
+            return ChildrenForSelectResource::collection($this->childrenRepository->getChildrenForUpdateSelect($parrenId))->resolve();
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
 }

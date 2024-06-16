@@ -24,4 +24,13 @@ class ChildrenController extends Controller
             return response(['error' => $exception->getMessage()], 400);
         }
     }
+
+    final public function indexForUpdateSelect(int $parrentId): Response
+    {
+        try {
+            return response($this->childrenService->childrenForUpdateSelectList($parrentId));
+        } catch (Exception $exception) {
+            return response(['error' => $exception->getMessage()], 400);
+        }
+    }
 }

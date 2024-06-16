@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\EmployeesRequests\CreateEmployeeRequest;
+use App\Http\Requests\Api\EmployeesRequests\FireEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\UpdateEmployeeRequest;
 use App\Services\EmployeesService;
 use Exception;
@@ -62,6 +63,16 @@ class EmployeesController extends Controller
     {
         try {
             return response($this->employeeService->updateEmployee($emoployeeId, $request->validated()));
+        } catch (Exception $exception) {
+            return response(['error' => $exception->getMessage()], 400);
+        }
+
+    }
+
+    final public function fireEmployee(FireEmployeeRequest $request, int $emoployeeId): Response
+    {
+        try {
+            return response($this->employeeService->fireEmployee($emoployeeId, $request->validated()));
         } catch (Exception $exception) {
             return response(['error' => $exception->getMessage()], 400);
         }

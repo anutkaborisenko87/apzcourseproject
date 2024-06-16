@@ -150,4 +150,23 @@ class EmployeesService implements IEmployeesService
             throw $exception;
         }
     }
+
+    final public function fireEmployee(int $id, array $data): array
+    {
+        try {
+            $teacher = $this->teacherRepository->getEmployeeById($id);
+            if (!$teacher) throw new Exception("Співробітник не знайдений");
+            $updatedUser = $this->userRepository->updateUser($teacher->user, ['active' => false]);
+            if (!$updatedUser) throw new Exception("Помилка деактивації користувача");
+            if (!isset($data['date_dismissal'])) {
+                $data['date_dismissal'] = date("Y-m-d");
+            }
+            $updatedEmployee = $this->teacherRepository->updateEmployee($teacher, $data);
+            if (!$updatedEmployee) throw new Exception("Помилка звільнення вчителя");
+            return (new EmployeeResource($updatedEmployee))->resolve();
+
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
 }

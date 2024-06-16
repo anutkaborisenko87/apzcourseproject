@@ -1115,6 +1115,54 @@ use OpenApi\Annotations as OA;
  *           description="Unauthorized"
  *       )
  *   )
+ * @OA\Post(
+ *       path="/employees/{employeeId}/fire-employee",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *     @OA\Parameter(
+ *           name="employeeId",
+ *           in="path",
+ *           required=true,
+ *           description="User ID to update",
+ *           @OA\Schema(
+ *               type="integer"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   type="object",
+ *                   required={"last_name", "first_name"},
+ *                   @OA\Property(
+ *                        property="date_dismissal",
+ *                        type="string",
+ *                        format="date",
+ *                        example="2024-06-16"
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       ),
+ *       @OA\Response(
+ *           response=403,
+ *           description="Bad request"
+ *       )
+ *   )
  * @OA\Delete(
  *       path="/employees/{employeeId}/delete",
  *       tags={"Employees"},
@@ -1713,6 +1761,37 @@ use OpenApi\Annotations as OA;
  *                 @OA\Property(property="error", type="string", example="Error message")
  *            )
  *        ),
+ *    )
+ * @OA\Get(
+ *        path="/children/{parrentId}",
+ *        tags={"Children"},
+ *        security={{"bearerAuth":{}}},
+ *       @OA\Parameter(
+ *            name="Accept",
+ *            in="header",
+ *            required=true,
+ *            @OA\Schema(
+ *                type="string",
+ *                default="application/json"
+ *            )
+ *        ),
+ *        @OA\Parameter(
+ *            name="parrentId",
+ *            in="path",
+ *            required=true,
+ *            description="User ID to update",
+ *            @OA\Schema(
+ *                type="integer"
+ *            )
+ *        ),
+ *        @OA\Response(
+ *            response=200,
+ *            description="Successful operation"
+ *        ),
+ *        @OA\Response(
+ *            response=401,
+ *            description="Unathorized"
+ *        )
  *    )
  */
 class SwaggerAnnotationsController extends Controller

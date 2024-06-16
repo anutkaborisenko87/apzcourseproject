@@ -70,6 +70,7 @@ class Kernel extends HttpKernel
         'parrent_exists' => \App\Http\Middleware\ParrentFound::class,
         'user_active' => \App\Http\Middleware\UserActive::class,
         'employee_active' => \App\Http\Middleware\EmployeeActive::class,
+        'employee_hired' => \App\Http\Middleware\EmployeeHired::class,
         'user_not_active' => \App\Http\Middleware\UserNotActive::class,
         'parrent_not_active' => \App\Http\Middleware\ParrentNotActive::class,
         'parrent_active' => \App\Http\Middleware\ParrentActive::class,
