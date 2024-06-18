@@ -2090,6 +2090,28 @@ use OpenApi\Annotations as OA;
  *             description="User not found"
  *         )
  *     )
+ * @OA\Get(
+ *         path="/groups/for-select",
+ *         tags={"Groups"},
+ *         security={{"bearerAuth":{}}},
+ *        @OA\Parameter(
+ *             name="Accept",
+ *             in="header",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="string",
+ *                 default="application/json"
+ *             )
+ *         ),
+ *         @OA\Response(
+ *             response=200,
+ *             description="Successful operation"
+ *         ),
+ *         @OA\Response(
+ *             response=401,
+ *             description="Unathorized"
+ *         )
+ *     )
  */
 class SwaggerAnnotationsController extends Controller
 {

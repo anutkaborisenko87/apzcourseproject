@@ -69,6 +69,7 @@ Route::middleware(['is_admin'])
     ->prefix('/parrents')
     ->group(function () {
         Route::get('/for-select', 'indexForSelect');
+        Route::get('/for-select/{child}', 'indexForSelect')->where(['child' => '[0-9]+']);
         Route::get('/active', 'indexActive');
         Route::get('/not-active', 'indexNotActive');
         Route::post('/create', 'store');
@@ -103,4 +104,11 @@ Route::middleware(['is_admin'])
                 Route::put('/update', 'updateChild');
                 Route::delete('/delete', 'deleteChild');
             });
+    });
+
+Route::middleware(['is_admin'])
+    ->controller(\App\Http\Controllers\Api\GroupsController::class)
+    ->prefix('/groups')
+    ->group(function () {
+        Route::get('/for-select', 'indexSelect');
     });

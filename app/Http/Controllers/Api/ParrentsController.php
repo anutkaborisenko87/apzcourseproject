@@ -27,9 +27,10 @@ class ParrentsController extends Controller
         }
     }
 
-    final public function indexForSelect(): Response
+    final public function indexForSelect(int $childId = null): Response
     {
         try {
+            if (!is_null($childId)) return response($this->parrentsService->getParrentsListForUpdateSelect($childId));
             return response($this->parrentsService->getParrentsListForSelect());
         } catch (Exception $exception) {
             return response(['error' => $exception->getMessage()]);

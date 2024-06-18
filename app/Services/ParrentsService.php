@@ -42,6 +42,16 @@ class ParrentsService implements IParrentsService
         }
     }
 
+    final public function getParrentsListForUpdateSelect(int $childId): array
+    {
+        try {
+            $parrents = $this->parrentsRepository->getActiveParrentsForUpdateSelect($childId);
+            return ParrentForSelectResource::collection($parrents)->resolve();
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
+
     final public function getNotActiveParrentsList(): array
     {
         try {

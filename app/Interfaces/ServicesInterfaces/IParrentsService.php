@@ -7,6 +7,7 @@ interface IParrentsService
     public function getActiveParrentsList(): array;
     public function getNotActiveParrentsList(): array;
     public function getParrentsListForSelect(): array;
+    public function getParrentsListForUpdateSelect(int $childId): array;
     public function getParrentInfo(int $id): array;
     public function deactivateParrent(int $id): array;
     public function reactivateParrent(int $id): array;
