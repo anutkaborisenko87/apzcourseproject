@@ -90,4 +90,17 @@ Route::middleware(['is_admin'])
     ->group(function () {
         Route::get('/for-select', 'indexForSelect');
         Route::get('/for-select/{parrent}', 'indexForUpdateSelect')->where(['parrent' => '[0-9]+']);
+        Route::get('/all', 'indexAllChildren');
+        Route::get('/for-enrolment', 'indexForEnrolmentChildren');
+        Route::get('/in-training', 'indexInTrainingChildren');
+        Route::get('/graduated', 'indexGraduatedChildren');
+        Route::post('/create', 'createChild');
+        Route::middleware(['child_exists'])
+            ->prefix('/{child}')
+            ->where(['child' => '[0-9]+'])
+            ->group(function () {
+                Route::get('/', 'showChild');
+                Route::put('/update', 'updateChild');
+                Route::delete('/delete', 'deleteChild');
+            });
     });

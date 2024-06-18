@@ -2,10 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Employee;
 use App\Models\Parrent;
-use App\Models\Position;
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 

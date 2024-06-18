@@ -36,6 +36,19 @@ class ParrentsRepository implements IParrentsRepository
         }
     }
 
+    final public function getActiveParrentsForUpdateSelect(int $childId): Collection
+    {
+        try {
+            return Parrent::whereHas('user', function ($query) {
+                $query->where('active', true);
+            })->whereDoesntHave('children_relations', function ($query) use ($childId) {
+                $query->where('child_id', $childId);
+            })->get();
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
+
     final public function getNotActiveParrents(): LengthAwarePaginator
     {
         try {

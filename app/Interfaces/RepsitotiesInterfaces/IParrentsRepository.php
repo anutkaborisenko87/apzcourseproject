@@ -10,6 +10,7 @@ interface IParrentsRepository
 {
     public function getActiveParrents(): LengthAwarePaginator;
     public function getActiveParrentsForSelect(): Collection;
+    public function getActiveParrentsForUpdateSelect(int $childId): Collection;
     public function getNotActiveParrents(): LengthAwarePaginator;
     public function getParrentById(int $id): ?Parrent;
     public function createParrent(array $data): Parrent;
