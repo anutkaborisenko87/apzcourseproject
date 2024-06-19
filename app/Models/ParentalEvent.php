@@ -23,6 +23,6 @@ class ParentalEvent extends Model
 
     final public function parrents_visitors(): BelongsToMany
     {
-        return $this->belongsToMany(Parrent::class, 'parent_ev_parent', 'parental_event_id', 'parrent_id');
+        return $this->belongsToMany(Parrent::class, 'parent_ev_parent', 'parental_event_id', 'parrent_id')->withPivot('result');
     }
 }

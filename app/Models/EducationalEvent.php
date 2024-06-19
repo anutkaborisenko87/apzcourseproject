@@ -30,6 +30,6 @@ class EducationalEvent extends Model
 
     final public function children_visitors(): BelongsToMany
     {
-        return $this->belongsToMany(Children::class, 'edu_ev_child', 'educational_event_id', 'child_id');
+        return $this->belongsToMany(Children::class, 'edu_ev_child', 'educational_event_id', 'child_id')->withPivot('estimation_mark');
     }
 }

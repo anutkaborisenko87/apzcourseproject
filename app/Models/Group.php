@@ -23,11 +23,11 @@ class Group extends Model
 
     final public function teachers(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, 'employees_groups', 'group_id', 'employee_id');
+        return $this->belongsToMany(Employee::class, 'employees_groups', 'group_id', 'employee_id')->withPivot(['date_start', 'date_finish']);
     }
 
     final public function educationalPrograms(): BelongsToMany
     {
-        return $this->belongsToMany(EducationalProgram::class, 'ed_prog_group', 'group_id', 'ed_prog_id');
+        return $this->belongsToMany(EducationalProgram::class, 'ed_prog_group', 'group_id', 'ed_prog_id')->withPivot(['date_start', 'date_finish']);
     }
 }

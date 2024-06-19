@@ -40,7 +40,7 @@ class Employee extends User
 
     final public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'employees_groups', 'employee_id', 'group_id');
+        return $this->belongsToMany(Group::class, 'employees_groups', 'employee_id', 'group_id')->withPivot(['date_start', 'date_finish']);
     }
 
     final public function educational_programs(): HasMany

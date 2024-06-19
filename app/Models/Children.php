@@ -33,21 +33,21 @@ class Children extends User
 
     final public function additional_classes():BelongsToMany
     {
-        return $this->belongsToMany(AdditionalClass::class, 'add_class_child', 'child_id', 'additional_class_id');
+        return $this->belongsToMany(AdditionalClass::class, 'add_class_child', 'child_id', 'additional_class_id')->withPivot('estimation_mark');
     }
 
     final public function parrent_relations(): BelongsToMany
     {
-        return $this->belongsToMany(Parrent::class, 'child_parent_relations', 'child_id', 'parrent_id');
+        return $this->belongsToMany(Parrent::class, 'child_parent_relations', 'child_id', 'parrent_id')->withPivot('relations');
     }
 
     final public function visited_educational_events(): BelongsToMany
     {
-        return $this->belongsToMany(EducationalEvent::class, 'edu_ev_child', 'child_id', 'educational_event_id');
+        return $this->belongsToMany(EducationalEvent::class, 'edu_ev_child', 'child_id', 'educational_event_id')->withPivot('estimation_mark');
     }
 
     final public function cultural_events(): BelongsToMany
     {
-        return $this->belongsToMany(CulturalEvent::class, 'cult_ev_child', 'child_id', 'cultural_events');
+        return $this->belongsToMany(CulturalEvent::class, 'cult_ev_child', 'child_id', 'cultural_events')->withPivot('role');
     }
 }

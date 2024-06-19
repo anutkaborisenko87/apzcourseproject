@@ -23,7 +23,7 @@ class EducationalProgram extends Model
 
     final public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'ed_prog_group', 'ed_prog_id', 'group_id');
+        return $this->belongsToMany(Group::class, 'ed_prog_group', 'ed_prog_id', 'group_id')->withPivot(['date_start', 'date_finish']);
     }
 
     final public function additionalClasses(): HasMany

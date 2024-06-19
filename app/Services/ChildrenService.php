@@ -41,7 +41,10 @@ class ChildrenService implements IChildrenService
     final public function allChildrenList(): array
     {
         try {
-            return ChildrenResource::collection($this->childrenRepository->getAllChildrenList())->resolve();
+            $repoList = $this->childrenRepository->getAllChildrenList();
+            $resp = $repoList->toArray();
+            $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
+            return $resp;
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -50,7 +53,10 @@ class ChildrenService implements IChildrenService
     final public function allChildrenForEnrolmentList(): array
     {
         try {
-            return ChildrenResource::collection($this->childrenRepository->getAllChildrenForEnrollment())->resolve();
+            $repoList = $this->childrenRepository->getAllChildrenForEnrollment();
+            $resp = $repoList->toArray();
+            $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
+            return $resp;
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -59,7 +65,10 @@ class ChildrenService implements IChildrenService
     final public function allChildrenInTrainingList(): array
     {
         try {
-            return ChildrenResource::collection($this->childrenRepository->getAllChildrenInTraining())->resolve();
+            $repoList = $this->childrenRepository->getAllChildrenInTraining();
+            $resp = $repoList->toArray();
+            $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
+            return $resp;
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -68,7 +77,10 @@ class ChildrenService implements IChildrenService
     final public function allGraduatedChildrenList(): array
     {
         try {
-            return ChildrenResource::collection($this->childrenRepository->getAllGraduatedChildren())->resolve();
+            $repoList = $this->childrenRepository->getAllGraduatedChildren();
+            $resp = $repoList->toArray();
+            $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
+            return $resp;
         } catch (Exception $exception) {
             throw $exception;
         }
@@ -110,7 +122,7 @@ class ChildrenService implements IChildrenService
             if (isset($data['user'])) {
                $this->userRepository->updateUser($childToUpdate->user, $data['user']);
             }
-            $childData = $data['child'];
+            $childData = $data['child'] ?? [];
             if (isset($childData['enrollment_date'])) {
                 $childData['enrollment_year'] =  (new DateTime($childData['enrollment_date']))->format('Y');
             }

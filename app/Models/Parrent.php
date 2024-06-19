@@ -25,12 +25,12 @@ class Parrent extends User
 
     final public function visited_parental_events(): BelongsToMany
     {
-        return $this->belongsToMany(ParentalEvent::class, 'parent_ev_parent', 'parrent_id', 'parental_event_id');
+        return $this->belongsToMany(ParentalEvent::class, 'parent_ev_parent', 'parrent_id', 'parental_event_id')->withPivot('result');
     }
 
     final public function visited_cultural_events(): BelongsToMany
     {
-        return $this->belongsToMany(CulturalEvent::class, 'cult_ev_visitior', 'parrent_id', 'cultural_event_id');
+        return $this->belongsToMany(CulturalEvent::class, 'cult_ev_visitior', 'parrent_id', 'cultural_event_id')->withPivot('reaction');
     }
 
 }

@@ -23,13 +23,13 @@ class CulturalEvent extends Model
 
     final public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(Children::class, 'cult_ev_child', 'cultural_events', 'child_id');
+        return $this->belongsToMany(Children::class, 'cult_ev_child', 'cultural_events', 'child_id')->withPivot('role');
     }
 
 
 
     final public function visitors(): BelongsToMany
     {
-        return $this->belongsToMany(Parrent::class, 'cult_ev_visitior', 'cultural_event_id', 'parrent_id');
+        return $this->belongsToMany(Parrent::class, 'cult_ev_visitior', 'cultural_event_id', 'parrent_id')->withPivot('reaction');
     }
 }
