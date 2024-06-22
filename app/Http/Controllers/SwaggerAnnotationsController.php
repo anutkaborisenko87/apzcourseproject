@@ -1537,7 +1537,7 @@ use OpenApi\Annotations as OA;
  *           description="Unauthorized"
  *       )
  *   )
- *  @OA\Delete(
+ * @OA\Delete(
  *        path="/parrents/{parrentId}/delete",
  *        tags={"Parents"},
  *        security={{"bearerAuth":{}}},
@@ -2112,6 +2112,266 @@ use OpenApi\Annotations as OA;
  *             description="Unathorized"
  *         )
  *     )
+ * @OA\Get(
+ *         path="/groups",
+ *         tags={"Groups"},
+ *         security={{"bearerAuth":{}}},
+ *        @OA\Parameter(
+ *             name="Accept",
+ *             in="header",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="string",
+ *                 default="application/json"
+ *             )
+ *         ),
+ *         @OA\Response(
+ *             response=200,
+ *             description="Successful operation"
+ *         ),
+ *         @OA\Response(
+ *             response=401,
+ *             description="Unathorized"
+ *         )
+ *     )
+ * @OA\Get(
+ *         path="/groups/{groupId}",
+ *         tags={"Groups"},
+ *         security={{"bearerAuth":{}}},
+ *        @OA\Parameter(
+ *             name="Accept",
+ *             in="header",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="string",
+ *                 default="application/json"
+ *             )
+ *         ),
+ *         @OA\Parameter(
+ *             name="groupId",
+ *             in="path",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="integer"
+ *             )
+ *         ),
+ *         @OA\Response(
+ *             response=200,
+ *             description="Successful operation"
+ *         ),
+ *         @OA\Response(
+ *             response=401,
+ *             description="Unathorized"
+ *         ),
+ *         @OA\Response(
+ *             response=403,
+ *             description="Bad request"
+ *         ),
+ *         @OA\Response(
+ *             response=404,
+ *             description="Group not found"
+ *         )
+ *     )
+ * @OA\Post(
+ *         path="/groups/{groupId}",
+ *         tags={"Groups"},
+ *         security={{"bearerAuth":{}}},
+ *        @OA\Parameter(
+ *             name="Accept",
+ *             in="header",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="string",
+ *                 default="application/json"
+ *             )
+ *         ),
+ *         @OA\Parameter(
+ *             name="groupId",
+ *             in="path",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="integer"
+ *             )
+ *         ),
+ *     @OA\RequestBody(
+ *            required=true,
+ *            @OA\MediaType(
+ *                mediaType="application/json",
+ *                @OA\Schema(
+ *                    schema="GroupInfoSchema",
+ *                    type="object",
+ *                    @OA\Property(property="from", type="string", format="date"),
+ *                    @OA\Property(property="to", type="string", format="date")
+ *
+ *                 )
+ *            )
+ *        ),
+ *         @OA\Response(
+ *             response=200,
+ *             description="Successful operation"
+ *         ),
+ *         @OA\Response(
+ *             response=401,
+ *             description="Unathorized"
+ *         ),
+ *         @OA\Response(
+ *             response=403,
+ *             description="Bad request"
+ *         ),
+ *         @OA\Response(
+ *             response=404,
+ *             description="Group not found"
+ *         )
+ *     )
+ * @OA\Post(
+ *       path="/groups/create",
+ *       tags={"Groups"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   schema="groupSchema",
+ *                   type="object",
+ *                   @OA\Property(property="title", type="string", description="Group's title"),
+ *                   @OA\Property(
+ *                          property="children",
+ *                          type="array",
+ *                          @OA\Items(
+ *                            type="integer"
+ *                          )
+ *                   ),
+ *                   @OA\Property(
+ *                           property="teachers",
+ *                           type="array",
+ *                           @OA\Items(
+ *                             type="object",
+ *                             @OA\Property(property="employee_id", type="integer", description="Employee's id"),
+ *                             @OA\Property(property="date_start", type="string", format="date"),
+ *                             @OA\Property(property="date_finish", type="string", format="date")
+ *                           )
+ *                    ),
+ *                    @OA\Property(
+ *                           property="educationalPrograms",
+ *                           type="array",
+ *                           @OA\Items(
+ *                             type="object",
+ *                             @OA\Property(property="ed_prog_id", type="integer"),
+ *                             @OA\Property(property="date_start", type="string", format="date"),
+ *                             @OA\Property(property="date_finish", type="string", format="date")
+ *                           )
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ * @OA\Put(
+ *       path="/groups/{groupId}/update",
+ *       tags={"Groups"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *              name="groupId",
+ *              in="path",
+ *              required=true,
+ *              @OA\Schema(
+ *                  type="integer"
+ *              )
+ *       ),
+ *       @OA\RequestBody(
+ *           required=true,
+ *           @OA\MediaType(
+ *               mediaType="application/json",
+ *               @OA\Schema(
+ *                   schema="groupSchema",
+ *                   type="object",
+ *                   @OA\Property(property="title", type="string", description="Group's title"),
+ *                   @OA\Property(
+ *                          property="children",
+ *                          type="array",
+ *                          @OA\Items(
+ *                            type="integer"
+ *                          )
+ *                   ),
+ *                   @OA\Property(
+ *                           property="teachers",
+ *                           type="array",
+ *                           @OA\Items(
+ *                             type="object",
+ *                             @OA\Property(property="employee_id", type="integer", description="Employee's id"),
+ *                             @OA\Property(property="date_start", type="string", format="date"),
+ *                             @OA\Property(property="date_finish", type="string", format="date")
+ *                           )
+ *                    ),
+ *                    @OA\Property(
+ *                           property="educationalPrograms",
+ *                           type="array",
+ *                           @OA\Items(
+ *                             type="object",
+ *                             @OA\Property(property="ed_prog_id", type="integer"),
+ *                             @OA\Property(property="date_start", type="string", format="date"),
+ *                             @OA\Property(property="date_finish", type="string", format="date")
+ *                           )
+ *                    )
+ *               )
+ *           )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
+ * @OA\Delete(
+ *       path="/groups/{groupId}/delete",
+ *       tags={"Groups"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *              name="groupId",
+ *              in="path",
+ *              required=true,
+ *              @OA\Schema(
+ *                  type="integer"
+ *              )
+ *       ),
+ *       @OA\Response(response="200", description="Successful operation"),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Unauthorized"
+ *       )
+ *   )
  */
 class SwaggerAnnotationsController extends Controller
 {

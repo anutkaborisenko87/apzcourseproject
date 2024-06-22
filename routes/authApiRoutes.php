@@ -111,4 +111,15 @@ Route::middleware(['is_admin'])
     ->prefix('/groups')
     ->group(function () {
         Route::get('/for-select', 'indexSelect');
+        Route::get('/', 'index');
+        Route::post('/create', 'storeGroupInfo');
+        Route::middleware(['group_exists'])
+            ->prefix('/{group}')
+            ->where(['group' => '[0-9]+'])
+            ->group(function () {
+                Route::get('/', 'showGroupInfo');
+                Route::post('/', 'showFullGroupInfo');
+                Route::put('/update', 'updateGroupInfo');
+                Route::delete('/delete', 'destroyGroupInfo');
+            });
     });
