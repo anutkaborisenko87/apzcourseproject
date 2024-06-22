@@ -3,6 +3,7 @@
 namespace App\Interfaces\RepsitotiesInterfaces;
 
 use App\Models\Employee;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 interface IEmployeesRepository
@@ -14,4 +15,5 @@ interface IEmployeesRepository
     public function createEmployee(array $data): Employee;
     public function updateEmployee(Employee $employee, array $data): Employee;
     public function deleteEmployee(Employee $employee): bool;
+    public function getActiveTeachersForGroup(): Collection;
 }

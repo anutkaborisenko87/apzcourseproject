@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\RepsitotiesInterfaces\IEmployeesRepository;
 use App\Models\Employee;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class EmployeesRepository implements IEmployeesRepository
@@ -16,6 +17,26 @@ class EmployeesRepository implements IEmployeesRepository
             return Employee::whereHas('user', function ($query) {
                 $query->where('active', true);
             })->with('user')->paginate(10);
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+
+    }
+
+    final public function getActiveTeachersForGroup(): Collection
+    {
+        try {
+            $today = date('Y-m-d');
+            return Employee::whereNotNull('employment_date')
+                ->whereNull('date_dismissal')
+                ->whereHas('user', function ($query) {
+                    $query->where('active', true);
+                })->whereHas('position', function ($query) {
+                    $query->where('position_title', 'teacher');
+                })->whereDoesntHave('groups')
+                ->orWhereHas('groups', function ($query) use ($today) {
+                    $query->where('employees_groups.date_finish', '<', $today);
+                })->with('user')->get();
         } catch (Exception $exception) {
             throw $exception;
         }

@@ -5,6 +5,7 @@ namespace App\Interfaces\ServicesInterfaces;
 interface IEmployeesService
 {
     public function getActiveEmployeesList(): array;
+    public function getActiveTeachersList(): array;
     public function getNotActiveEmployeesList(): array;
     public function getWorkingEmployeesList(): array;
     public function createEmployee(array $data): array;

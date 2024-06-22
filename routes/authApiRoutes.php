@@ -32,6 +32,7 @@ Route::middleware(['is_admin'])
     ->prefix('/employees')
     ->group(function () {
         Route::get('/active', 'indexActiveEmployees');
+        Route::get('/teachers', 'indexActiveTeachers');
         Route::get('/not_active', 'indexNotActiveEmployees');
         Route::get('/working', 'indexWorkingEmployees');
         Route::post('/create', 'storeEmployee');

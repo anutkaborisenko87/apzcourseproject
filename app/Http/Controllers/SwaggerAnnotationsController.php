@@ -628,6 +628,42 @@ use OpenApi\Annotations as OA;
  *      )
  *  )
  * @OA\Get(
+ *       path="/employees/teachers",
+ *       tags={"Employees"},
+ *       security={{"bearerAuth":{}}},
+ *      @OA\Parameter(
+ *           name="Accept",
+ *           in="header",
+ *           required=true,
+ *           @OA\Schema(
+ *               type="string",
+ *               default="application/json"
+ *           )
+ *       ),
+ *      @OA\Parameter(
+ *            name="page",
+ *            in="query",
+ *            description="The page number to retrieve.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32"
+ *            )
+ *       ),
+ *       @OA\Response(
+ *           response=200,
+ *           description="Active employees list "
+ *       ),
+ *       @OA\Response(
+ *           response=401,
+ *           description="Error: Bad Request",
+ *           @OA\JsonContent(
+ *                type="object",
+ *                @OA\Property(property="error", type="string", example="Error message")
+ *           )
+ *       ),
+ *   )
+ * @OA\Get(
  *       path="/employees/active",
  *       tags={"Employees"},
  *       security={{"bearerAuth":{}}},

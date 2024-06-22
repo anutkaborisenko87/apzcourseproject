@@ -29,6 +29,16 @@ class EmployeesController extends Controller
 
     }
 
+    final public function indexActiveTeachers(): Response
+    {
+        try {
+            return response($this->employeeService->getActiveTeachersList());
+        } catch (Exception $exception) {
+            return response(['error' => $exception], 400);
+        }
+
+    }
+
     final public function indexNotActiveEmployees(): Response
     {
         try {

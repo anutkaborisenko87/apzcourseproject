@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\EmployeeResource;
+use App\Http\Resources\TeachersForSelectResource;
 use App\Interfaces\ServicesInterfaces\IEmployeesService;
 use App\Repositories\EmployeesRepository;
 use App\Repositories\UserRepository;
@@ -19,7 +20,6 @@ class EmployeesService implements IEmployeesService
         $this->teacherRepository = $teacherRepository;
         $this->userRepository = $userRepository;
     }
-
     final public function getActiveEmployeesList(): array
     {
         try {
@@ -32,7 +32,16 @@ class EmployeesService implements IEmployeesService
         }
 
     }
+    final public function getActiveTeachersList(): array
+    {
+        try {
+            $teachers = $this->teacherRepository->getActiveTeachersForGroup();
+            return TeachersForSelectResource::collection($teachers)->resolve();
+        } catch (Exception $exception) {
+            throw $exception;
+        }
 
+    }
     final public function getNotActiveEmployeesList(): array
     {
         try {
