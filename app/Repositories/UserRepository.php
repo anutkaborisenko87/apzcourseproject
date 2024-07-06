@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\UsersControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IUserRpository;
 use App\Models\User;
 use Exception;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,10 +39,10 @@ class UserRepository implements IUserRpository
     {
         try {
             $user = User::find($id);
-            if (!$user) throw new Exception('Користувача не знайдено');
+            if (!$user) throw UsersControllerException::getUserByIdError($id);
             return $user;
         } catch (Exception $exception) {
-            throw $exception;
+            throw UsersControllerException::getUserByIdError($id);
         }
     }
 
@@ -49,44 +51,44 @@ class UserRepository implements IUserRpository
         try {
             return User::create($userData);
         } catch (Exception $exception) {
-            throw $exception;
+            throw UsersControllerException::createUserError($exception->getCode());
         }
     }
 
     final public function updateUser(User $user, array $data): User
     {
         try {
-            if (!$user->update($data)) throw new Exception('Невдала спроба оновити дані.');
+            if (!$user->update($data)) throw UsersControllerException::updateUserError(Response::HTTP_BAD_REQUEST);
             return $user;
         } catch (Exception $exception) {
-            throw $exception;
+            throw UsersControllerException::updateUserError($exception->getCode());
         }
     }
     final public function deactivateUser(User $user): User
     {
         try {
-            if (!$user->update(['active' => false])) throw new Exception('Невдала спроба оновити дані.');
+            if (!$user->update(['active' => false])) throw UsersControllerException::updateUserError(Response::HTTP_BAD_REQUEST);
             return $user;
         } catch (Exception $exception) {
-            throw $exception;
+            throw UsersControllerException::updateUserError($exception->getCode());
         }
     }
     final public function reactivateUser(User $user): User
     {
         try {
-            if (!$user->update(['active' => true])) throw new Exception('Невдала спроба оновити дані.');
+            if (!$user->update(['active' => true])) throw UsersControllerException::updateUserError(Response::HTTP_BAD_REQUEST);
             return $user;
         } catch (Exception $exception) {
-            throw $exception;
+            throw UsersControllerException::updateUserError($exception->getCode());
         }
     }
     final public function deleteUser(User $user): bool
     {
         try {
-            if (!$user->delete()) throw new Exception('Невдала спроба видалити дані.');
+            if (!$user->delete()) throw UsersControllerException::deleteUserError(Response::HTTP_BAD_REQUEST);
             return true;
         } catch (Exception $exception) {
-            throw $exception;
+            throw UsersControllerException::deleteUserError($exception->getCode());
         }
     }
 }

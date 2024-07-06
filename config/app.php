@@ -165,6 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
+        App\Providers\BindingServiceProvider::class,
 
         /*
          * Application Service Providers...

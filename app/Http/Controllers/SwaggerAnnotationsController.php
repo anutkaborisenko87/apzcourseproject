@@ -2149,6 +2149,28 @@ use OpenApi\Annotations as OA;
  *         )
  *     )
  * @OA\Get(
+ *         path="/children/for-group-select",
+ *         tags={"Children"},
+ *         security={{"bearerAuth":{}}},
+ *        @OA\Parameter(
+ *             name="Accept",
+ *             in="header",
+ *             required=true,
+ *             @OA\Schema(
+ *                 type="string",
+ *                 default="application/json"
+ *             )
+ *         ),
+ *         @OA\Response(
+ *             response=200,
+ *             description="Successful operation"
+ *         ),
+ *         @OA\Response(
+ *             response=401,
+ *             description="Unathorized"
+ *         )
+ *     )
+ * @OA\Get(
  *         path="/groups",
  *         tags={"Groups"},
  *         security={{"bearerAuth":{}}},

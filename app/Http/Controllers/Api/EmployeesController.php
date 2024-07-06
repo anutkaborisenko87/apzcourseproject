@@ -6,126 +6,71 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\EmployeesRequests\CreateEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\FireEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\UpdateEmployeeRequest;
-use App\Services\EmployeesService;
-use Exception;
+use App\Interfaces\ServicesInterfaces\IEmployeesService;
 use Illuminate\Http\Response;
 
 class EmployeesController extends Controller
 {
-    private $employeeService;
+    private IEmployeesService $employeeService;
 
-    public function __construct(EmployeesService $employeeService)
+    public function __construct(IEmployeesService $employeeService)
     {
         $this->employeeService = $employeeService;
     }
 
     final public function indexActiveEmployees(): Response
     {
-        try {
-            return response($this->employeeService->getActiveEmployeesList());
-        } catch (Exception $exception) {
-            return response(['error' => $exception], 400);
-        }
-
+        return response($this->employeeService->getActiveEmployeesList());
     }
 
     final public function indexActiveTeachers(): Response
     {
-        try {
-            return response($this->employeeService->getActiveTeachersList());
-        } catch (Exception $exception) {
-            return response(['error' => $exception], 400);
-        }
-
+        return response($this->employeeService->getActiveTeachersList());
     }
 
     final public function indexNotActiveEmployees(): Response
     {
-        try {
-            return response($this->employeeService->getNotActiveEmployeesList());
-        } catch (Exception $exception) {
-            return response(['error' => $exception], 400);
-        }
+        return response($this->employeeService->getActiveTeachersList());
 
     }
 
     final public function indexWorkingEmployees(): Response
     {
-        try {
-            return response($this->employeeService->getWorkingEmployeesList());
-        } catch (Exception $exception) {
-            return response(['error' => $exception], 400);
-        }
-
+        return response($this->employeeService->getWorkingEmployeesList());
     }
 
     final public function storeEmployee(CreateEmployeeRequest $request): Response
     {
-        try {
-            return response($this->employeeService->createEmployee($request->validated()));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->createEmployee($request->validated()));
     }
 
     final public function update(UpdateEmployeeRequest $request, int $emoployeeId): Response
     {
-        try {
-            return response($this->employeeService->updateEmployee($emoployeeId, $request->validated()));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->updateEmployee($emoployeeId, $request->validated()));
     }
 
     final public function fireEmployee(FireEmployeeRequest $request, int $emoployeeId): Response
     {
-        try {
-            return response($this->employeeService->fireEmployee($emoployeeId, $request->validated()));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->fireEmployee($emoployeeId, $request->validated()));
     }
 
     final public function destroy(int $emoployeeId): Response
     {
-        try {
-            return response($this->employeeService->deleteEmployee($emoployeeId));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->deleteEmployee($emoployeeId));
     }
 
     final public function reactivateEmployee(int $emoployeeId): Response
     {
-        try {
-            return response($this->employeeService->reactivateEmployee($emoployeeId));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->reactivateEmployee($emoployeeId));
     }
 
     final public function deactivateEmployee(int $emoployeeId): Response
     {
-        try {
-            return response($this->employeeService->deactivateEmployee($emoployeeId));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->deactivateEmployee($emoployeeId));
     }
 
     final public function showEmployee(int $emoployeeId): Response
     {
-        try {
-            return response($this->employeeService->showEmployeeInfo($emoployeeId));
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
-
+        return response($this->employeeService->showEmployeeInfo($emoployeeId));
     }
 }

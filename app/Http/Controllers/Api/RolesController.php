@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 
 class RolesController extends Controller
 {
-    private $rolesService;
+    private RolesService $rolesService;
     public function __construct(RolesService $rolesService)
     {
         $this->rolesService = $rolesService;

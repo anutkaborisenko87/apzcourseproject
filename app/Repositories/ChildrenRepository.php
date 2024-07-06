@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\ChildrenControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IChildrenRepository;
 use App\Models\Children;
 use Exception;
@@ -17,7 +18,7 @@ class ChildrenRepository implements IChildrenRepository
             $children = Children::with('user')->get();
             return $children;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenListError();
         }
     }
 
@@ -29,7 +30,20 @@ class ChildrenRepository implements IChildrenRepository
             })->get();
             return $children;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenListError();
+        }
+    }
+
+    final public function getChildrenForGroupSelect(): Collection
+    {
+        try {
+            $children = Children::with('user')
+                ->whereNull('group_id')
+                ->whereNull('graduation_date')
+                ->get();
+            return $children;
+        } catch (Exception $exception) {
+            throw ChildrenControllerException::childrenListError();
         }
     }
 
@@ -39,7 +53,7 @@ class ChildrenRepository implements IChildrenRepository
             return Children::with('group')
                 ->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenListError();
         }
     }
 
@@ -50,7 +64,7 @@ class ChildrenRepository implements IChildrenRepository
                 ->whereNull('group_id')
                 ->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenListError();
         }
     }
 
@@ -66,7 +80,7 @@ class ChildrenRepository implements IChildrenRepository
                 })
                 ->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenListError();
         }
     }
 
@@ -78,7 +92,7 @@ class ChildrenRepository implements IChildrenRepository
                 ->whereDate('graduation_date', '>', $today)
                 ->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenListError();
         }
     }
 
@@ -90,7 +104,7 @@ class ChildrenRepository implements IChildrenRepository
                 ->with('group')
                 ->with('user')->first();
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenNotFoundError($childId);
         }
     }
 
@@ -113,7 +127,7 @@ class ChildrenRepository implements IChildrenRepository
             }
             return $cteatedChild;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenNotCreatedError();
         }
     }
 
@@ -133,17 +147,17 @@ class ChildrenRepository implements IChildrenRepository
             $child->parrent_relations()->sync($syncData);
             return $child;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenNotUpdatedError();
         }
     }
 
     final public function  deleteChildInfo(Children $child): bool
     {
         try {
-            if (!$child->delete()) throw new Exception('Помилка видалення інформації про дитину');
+            if (!$child->delete())  throw ChildrenControllerException::childrenNotDeletedError($child->id);
             return true;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ChildrenControllerException::childrenNotDeletedError($child->id);
         }
     }
 }

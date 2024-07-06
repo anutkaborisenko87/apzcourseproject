@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ChildrenControllerException;
 use App\Models\Children;
 use Closure;
 use Illuminate\Http\RedirectResponse;
@@ -16,13 +17,14 @@ class ChildFound
      * @param Request $request
      * @param Closure(Request): (Response|RedirectResponse) $next
      * @return Response|RedirectResponse
+     * @throws ChildrenControllerException
      */
     public function handle(Request $request, Closure $next)
     {
         $child = Children::find($request->route('child'));
         if (!$child) {
-               return response(['error' => 'Дитину не знайдено'], 404);
-            }
+            throw ChildrenControllerException::childrenNotFoundError($request->route('child'));
+        }
         return $next($request);
     }
 }

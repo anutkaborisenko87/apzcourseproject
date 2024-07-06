@@ -2,27 +2,31 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\EmployeesControllerException;
 use App\Models\Employee;
 use Closure;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class EmployeeActive
 {
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @param Request $request
+     * @param Closure(Request): (Response|RedirectResponse) $next
+     * @return Response|RedirectResponse
+     * @throws EmployeesControllerException
      */
     public function handle(Request $request, Closure $next)
     {
         $employee = Employee::find($request->route('employee'));
         if (!$employee) {
-            return response(['error' => 'Співробітника не знайдено'], 404);
+            throw EmployeesControllerException::getEmployeeByIdError($request->route('employee'));
         }
         if (!$employee->user->active) {
-            return response(['error' => 'Співробітника вже деактивовано'], 401);
+            throw EmployeesControllerException::deactivatedEmployeeError();
         }
         return $next($request);
     }

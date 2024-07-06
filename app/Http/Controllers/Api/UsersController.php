@@ -12,7 +12,7 @@ use Mockery\Exception;
 
 class UsersController extends Controller
 {
-    private $userService;
+    private UserService $userService;
 
     public function __construct(UserService $userService)
     {
@@ -21,92 +21,56 @@ class UsersController extends Controller
 
     final public function indexProfile(): Response
     {
-        try {
-            $profile = $this->userService->getProfile();
-            return response($profile);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $profile = $this->userService->getProfile();
+        return response($profile);
     }
 
     final public function indexActiveUsers(): Response
     {
-        try {
-            $activeUsers = $this->userService->getAllActiveUsers();
-            return response($activeUsers);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $activeUsers = $this->userService->getAllActiveUsers();
+        return response($activeUsers);
     }
 
     final public function indexNotActiveUsers(): Response
     {
-        try {
-            $activeUsers = $this->userService->getAllNotActiveUsers();
-            return response($activeUsers);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $activeUsers = $this->userService->getAllNotActiveUsers();
+        return response($activeUsers);
     }
 
     final public function showUser(int $userId): Response
     {
-        try {
-            $user = $this->userService->getUserById($userId);
-            return response($user);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $user = $this->userService->getUserById($userId);
+        return response($user);
     }
 
     final public function store(CreateUserRequest $request): Response
     {
-        try {
-            $activeUsers = $this->userService->createUser($request->validated());
-            return response($activeUsers);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $activeUsers = $this->userService->createUser($request->validated());
+        return response($activeUsers);
     }
 
     final public function update(int $userId, UpdateUserRequest $request): Response
     {
-        try {
-            $updatedUser = $this->userService->updateUser($userId, $request->validated());
-            return response($updatedUser);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $updatedUser = $this->userService->updateUser($userId, $request->validated());
+        return response($updatedUser);
     }
 
     final public function reactivateUser(int $userId): Response
     {
-        try {
-            $updatedUser = $this->userService->reactivateUser($userId);
-            return response($updatedUser);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $updatedUser = $this->userService->reactivateUser($userId);
+        return response($updatedUser);
     }
 
     final public function deactivateUser(int $userId): Response
     {
-        try {
-            $updatedUser = $this->userService->deactivateUser($userId);
-            return response($updatedUser);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $updatedUser = $this->userService->deactivateUser($userId);
+        return response($updatedUser);
     }
 
     final public function destroy(int $userId): Response
     {
-        try {
-            $deletedUser = $this->userService->deleteUser($userId);
-            return response($deletedUser);
-        } catch (Exception $exception) {
-            return response(['error' => $exception->getMessage()], 400);
-        }
+        $deletedUser = $this->userService->deleteUser($userId);
+        return response($deletedUser);
     }
 
 }

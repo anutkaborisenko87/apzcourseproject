@@ -6,6 +6,7 @@ interface IChildrenService
 {
     public function childrenForSelectList(): array;
     public function childrenForUpdateSelectList(int $parrenId): array;
+    public function childrenForGroupSelectList(): array;
     public function allChildrenList(): array;
     public function allChildrenForEnrolmentList(): array;
     public function allChildrenInTrainingList(): array;

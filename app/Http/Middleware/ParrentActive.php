@@ -2,30 +2,31 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Employee;
+use App\Exceptions\ParrentControllerException;
 use App\Models\Parrent;
-use App\Models\Position;
-use App\Models\User;
 use Closure;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ParrentActive
 {
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @param Request $request
+     * @param Closure(Request): (Response|RedirectResponse) $next
+     * @return Response|RedirectResponse
+     * @throws ParrentControllerException
      */
     public function handle(Request $request, Closure $next)
     {
         $parrent = Parrent::find($request->route('parrent'));
         if (!$parrent) {
-            return response(['error' => 'Батька не знайдено'], 404);
+            throw ParrentControllerException::parrentNotFoundError($request->route('parrent'));
         }
         if (!$parrent->user->active) {
-            return response(['error' => 'Батька вже деактивовано'], 401);
+            throw ParrentControllerException::parrentAlreadyDeactivaredError($request->route('parrent'));
         }
         return $next($request);
     }

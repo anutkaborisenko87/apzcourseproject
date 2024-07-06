@@ -91,6 +91,7 @@ Route::middleware(['is_admin'])
     ->prefix('/children')
     ->group(function () {
         Route::get('/for-select', 'indexForSelect');
+        Route::get('/for-group-select', 'indexForGroupSelect');
         Route::get('/for-select/{parrent}', 'indexForUpdateSelect')->where(['parrent' => '[0-9]+']);
         Route::get('/all', 'indexAllChildren');
         Route::get('/for-enrolment', 'indexForEnrolmentChildren');

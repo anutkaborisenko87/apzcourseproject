@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use League\Flysystem\Exception;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -32,10 +34,14 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (Exception $exception, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'error' => $exception->getMessage()
+                ], $exception->getCode());
+            }
         });
     }
 }

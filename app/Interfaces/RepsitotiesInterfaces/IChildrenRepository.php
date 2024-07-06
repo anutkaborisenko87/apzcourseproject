@@ -11,6 +11,7 @@ interface IChildrenRepository
 {
     public function getChildrenForSelect(): Collection;
     public function getChildrenForUpdateSelect(int $parrentId): Collection;
+    public function getChildrenForGroupSelect(): Collection;
     public function getAllChildrenList(): LengthAwarePaginator;
     public function getAllChildrenForEnrollment(): LengthAwarePaginator;
     public function getAllChildrenInTraining(): LengthAwarePaginator;

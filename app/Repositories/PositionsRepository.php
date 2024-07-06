@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\PositionsControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IPositionsRepository;
 use App\Models\Position;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Response;
 
 class PositionsRepository implements IPositionsRepository
 {
@@ -15,7 +17,7 @@ class PositionsRepository implements IPositionsRepository
         try {
             return Position::all();
         } catch (Exception $exception) {
-            throw $exception;
+            throw PositionsControllerException::getPositionsError($exception->getCode());
         }
     }
 
@@ -23,10 +25,10 @@ class PositionsRepository implements IPositionsRepository
     {
         try {
             $position = Position::create($data);
-            if (!$position) throw new Exception('Помилка створення позиції');
+            if (!$position) throw PositionsControllerException::createPositionsError(Response::HTTP_BAD_REQUEST);
             return $position;
         } catch (Exception $exception) {
-            throw $exception;
+            throw PositionsControllerException::createPositionsError(Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -34,30 +36,30 @@ class PositionsRepository implements IPositionsRepository
     {
         try {
             $position = Position::find($id);
-            if (!$position) throw new Exception('Така позиція не знайдена');
+            if (!$position) throw PositionsControllerException::getPositionInfoError($id);
             return $position;
         } catch (Exception $exception) {
-            throw $exception;
+            throw PositionsControllerException::getPositionInfoError($id);
         }
     }
 
     final public function updatePositionInfo(Position $position, array $data): Position
     {
         try {
-            if (!$position->update($data)) throw new Exception('Помилка оновлдення позиції');
+            if (!$position->update($data)) throw PositionsControllerException::updatePositionInfoError(Response::HTTP_BAD_REQUEST);
             return $position;
         } catch (Exception $exception) {
-            throw $exception;
+            throw PositionsControllerException::updatePositionInfoError($exception->getCode());
         }
     }
 
     final public function deletePositionInfo(Position $position): bool
     {
         try {
-            if (!$position->delete()) throw new Exception('Помилка видалення позиції');
+            if (!$position->delete()) throw PositionsControllerException::deletePositionInfoError($position->id);
             return true;
         } catch (Exception $exception) {
-            throw $exception;
+            throw PositionsControllerException::deletePositionInfoError($position->id);
         }
     }
 }

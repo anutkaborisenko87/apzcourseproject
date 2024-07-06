@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\EmployeesControllerException;
 use App\Models\Employee;
 use App\Models\User;
 use Closure;
@@ -20,10 +21,10 @@ class EmployeeNotActive
     {
         $employee = Employee::find($request->route('employee'));
         if (!$employee) {
-            return response(['error' => 'Співробітника не знайдено'], 404);
+            throw EmployeesControllerException::getEmployeeByIdError($request->route('employee'));
         }
         if ($employee->user->active) {
-            return response(['error' => 'Співробітника вже активовано'], 401);
+            throw EmployeesControllerException::activatedEmployeeError();
         }
         return $next($request);
     }

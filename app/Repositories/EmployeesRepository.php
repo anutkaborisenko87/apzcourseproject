@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\EmployeesControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IEmployeesRepository;
 use App\Models\Employee;
 use Exception;
@@ -18,9 +19,8 @@ class EmployeesRepository implements IEmployeesRepository
                 $query->where('active', true);
             })->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::getEmployeesListError($exception->getCode());
         }
-
     }
 
     final public function getActiveTeachersForGroup(): Collection
@@ -38,7 +38,7 @@ class EmployeesRepository implements IEmployeesRepository
                     $query->where('employees_groups.date_finish', '<', $today);
                 })->with('user')->get();
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::getEmployeesListError($exception->getCode());
         }
 
     }
@@ -50,7 +50,7 @@ class EmployeesRepository implements IEmployeesRepository
                 $query->where('active', false);
             })->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::getEmployeesListError($exception->getCode());
         }
 
     }
@@ -65,16 +65,18 @@ class EmployeesRepository implements IEmployeesRepository
                 ->whereNull('date_dismissal')
                 ->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::getEmployeesListError($exception->getCode());
         }
     }
 
-    final public function getEmployeeById(int $id): ?Employee
+    final public function getEmployeeById(int $id): Employee
     {
         try {
-            return Employee::find($id);
+            $employee = Employee::find($id);
+            if (!$employee) throw EmployeesControllerException::getEmployeeByIdError($id);
+            return $employee;
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::getEmployeeByIdError($id);
         }
     }
 
@@ -82,30 +84,30 @@ class EmployeesRepository implements IEmployeesRepository
     {
         try {
             $employee = Employee::create($data);
-            if (!$employee) throw new Exception("Помилка створення співробітника");
+            if (!$employee) throw EmployeesControllerException::createEmployeeError(Response::HTTP_BAD_REQUEST);
             return $employee;
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::createEmployeeError($exception->getCode());
         }
     }
 
     final public function updateEmployee(Employee $employee, array $data): Employee
     {
         try {
-            if (!$employee->update($data)) throw new Exception("Помилка оновлення даних співробітника");
+            if (!$employee->update($data)) throw EmployeesControllerException::updateEmployeeError(Response::HTTP_BAD_REQUEST);
             return $employee;
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::updateEmployeeError($exception->getCode());
         }
     }
 
     final public function deleteEmployee(Employee $employee): bool
     {
         try {
-            if (!$employee->delete()) throw new Exception("Помилка видалення даних співробітника");
+            if (!$employee->delete()) throw EmployeesControllerException::deleteEmployeeError(Response::HTTP_BAD_REQUEST);
             return true;
         } catch (Exception $exception) {
-            throw $exception;
+            throw EmployeesControllerException::deleteEmployeeError($exception->getCode());
         }
     }
 }

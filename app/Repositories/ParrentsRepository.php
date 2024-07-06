@@ -2,10 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\ParrentControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
 use App\Models\Parrent;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ParrentsRepository implements IParrentsRepository
@@ -21,7 +23,7 @@ class ParrentsRepository implements IParrentsRepository
                 ->with('user')->paginate(10);
             return $parrents;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::getActiveParrentsError($exception->getCode());
         }
     }
 
@@ -32,7 +34,7 @@ class ParrentsRepository implements IParrentsRepository
                 $query->where('active', true);
             })->get();
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::getActiveParrentsForSelectError($exception->getCode());
         }
     }
 
@@ -45,7 +47,7 @@ class ParrentsRepository implements IParrentsRepository
                 $query->where('child_id', $childId);
             })->get();
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::getActiveParrentsForSelectError($exception->getCode());
         }
     }
 
@@ -58,7 +60,7 @@ class ParrentsRepository implements IParrentsRepository
                 ->with('children_relations')
                 ->with('user')->paginate(10);
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::getNotActiveParrentsError($exception->getCode());
         }
     }
 
@@ -69,10 +71,10 @@ class ParrentsRepository implements IParrentsRepository
                 ->with('children_relations')
                 ->with('user')
                 ->first();
-            if (!$parrent) throw new Exception('Батька не знайдено');
+            if (!$parrent) throw ParrentControllerException::parrentNotFoundError($id);
             return $parrent;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::parrentNotFoundError($id);
         }
     }
 
@@ -94,7 +96,7 @@ class ParrentsRepository implements IParrentsRepository
             }
             return $newParrent;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::createParrentError($exception->getCode());
         }
     }
 
@@ -110,20 +112,20 @@ class ParrentsRepository implements IParrentsRepository
                 unset($data['children']);
             }
             $parrent->children_relations()->sync($syncData);
-            if (!$parrent->update($data)) throw new Exception('Помилка оновлення інформації про батька');
+            if (!$parrent->update($data)) throw ParrentControllerException::updateParrentError(Response::HTTP_BAD_REQUEST);
             return $parrent;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::updateParrentError($exception->getCode());
         }
     }
 
     final public function deleteParrent(Parrent $parrent): bool
     {
         try {
-            if (!$parrent->delete()) throw new Exception('Помилка видалення батька');
+            if (!$parrent->delete()) throw ParrentControllerException::deleteParrentError($parrent->id);
             return true;
         } catch (Exception $exception) {
-            throw $exception;
+            throw ParrentControllerException::deleteParrentError($parrent->id);
         }
     }
 }

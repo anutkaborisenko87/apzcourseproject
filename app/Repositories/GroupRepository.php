@@ -2,11 +2,13 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\GroupsControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IGroupRepository;
 use App\Models\Children;
 use App\Models\Group;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Response;
 
 class GroupRepository implements IGroupRepository
 {
@@ -15,7 +17,7 @@ class GroupRepository implements IGroupRepository
         try {
             return Group::all();
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::getGroupsListError($exception->getCode());
         }
     }
 
@@ -38,7 +40,7 @@ class GroupRepository implements IGroupRepository
                 },
             ])->get();
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::getGroupsListError($exception->getCode());
         }
     }
 
@@ -46,10 +48,10 @@ class GroupRepository implements IGroupRepository
     {
         try {
             $group = Group::find($groupId);
-            if (!$group) throw new Exception('Групу не знайдено');
+            if (!$group) throw GroupsControllerException::getGroupByIdError($groupId);
             return $group;
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::getGroupByIdError($groupId);
         }
     }
 
@@ -77,7 +79,7 @@ class GroupRepository implements IGroupRepository
             }
             return $group;
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::getGroupsListError($exception->getCode());
         }
     }
 
@@ -108,7 +110,7 @@ class GroupRepository implements IGroupRepository
                 unset($data['educationalPrograms']);
             }
             $group = Group::create($data);
-            if (!$group) throw new Exception('Помилка створення групи');
+            if (!$group) throw GroupsControllerException::createGroupError(Response::HTTP_BAD_REQUEST);
             if (!empty($children)) {
                 array_walk($children, function ($child) use ($group) {
                     Children::where('id', $child)->update(['group_id' => $group->id]);
@@ -122,7 +124,7 @@ class GroupRepository implements IGroupRepository
             }
             return $group->load('children', 'teachers', 'educationalPrograms');
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::createGroupError($exception->getCode());
         }
     }
 
@@ -153,7 +155,7 @@ class GroupRepository implements IGroupRepository
                 unset($data['educationalPrograms']);
             }
             if (!empty($data)) {
-                if (!$group->update($data)) throw new Exception('Помилка оновлення групи');
+                if (!$group->update($data)) throw GroupsControllerException::updateGroupError(Response::HTTP_BAD_REQUEST);
             }
 
             if (!empty($children)) {
@@ -169,17 +171,17 @@ class GroupRepository implements IGroupRepository
             }
             return $group->load('children', 'teachers', 'educationalPrograms');
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::updateGroupError($exception->getCode());
         }
     }
 
     final public function deleteGroup(Group $group): bool
     {
         try {
-            if (!$group->delete()) throw new Exception('Помилка видалення групи');
+            if (!$group->delete()) throw GroupsControllerException::deleteGroupError($group->id);
             return true;
         } catch (Exception $exception) {
-            throw $exception;
+            throw GroupsControllerException::deleteGroupError($group->id);
         }
     }
 }
