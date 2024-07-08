@@ -2,10 +2,9 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Illuminate\Http\Response;
 
-class EmployeesControllerException extends Exception
+class EmployeesControllerException extends AbstractClassException
 {
     public static function getEmployeesListError(int $code): self
     {

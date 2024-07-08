@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
 use Laravel\Passport\Token;
+use App\Exceptions\AuthControllerException;
 
 class AuthController extends Controller
 {
@@ -16,16 +17,16 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
         if (!Auth::attempt($credentials)) {
-            return response(['error' => 'Неввірний логін або пароль'], 401);
+            throw AuthControllerException::wrongCredentialsError();
         }
         $user = auth()->user();
         if (!$user->active) {
             $user->tokens()->delete();
-            return response(['error' => 'Цього користувача було деактивовано'], 401);
+            throw AuthControllerException::deactivatedAuthUserError();
         }
         if (!$user->roles()->first()) {
             $user->tokens()->delete();
-            return response(['error' => 'У вас немає прав доступу до системи'], 401);
+            throw AuthControllerException::hasNotRightsAuthUserError();
         }
         $newToken = $user->createToken('Personal Access Token');
         $resUser = (new AuthUserResource($user))->resolve();
@@ -37,11 +38,11 @@ class AuthController extends Controller
         $user = Auth::guard('api')->user();
         if (!$user->active) {
             $user->tokens()->delete();
-            return response(['error' => 'Користувача деактивовано'], 401);
+            throw AuthControllerException::deactivatedAuthUserError();
         }
         if (!$user->roles()->first()) {
             $user->tokens()->delete();
-            return response(['error' => 'У вас немає прав доступу до системи'], 401);
+            throw AuthControllerException::hasNotRightsAuthUserError();
         }
         $resUser = (new AuthUserResource($user))->resolve();
         return response(['user' => $resUser]);
