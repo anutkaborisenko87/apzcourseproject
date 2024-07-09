@@ -5,9 +5,14 @@ namespace App\Repositories;
 use App\Exceptions\UsersControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IUserRpository;
 use App\Models\User;
+use App\QueryFilters\SearchBy;
+use App\QueryFilters\SortBy;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Auth;
 
 class UserRepository implements IUserRpository
@@ -25,14 +30,34 @@ class UserRepository implements IUserRpository
         return $user;
     }
 
-    final public function getAllActiveUsers(): LengthAwarePaginator
+    final public function getAllActiveUsers(Request $request): LengthAwarePaginator
     {
-        return User::where('id', '<>', $this->user->id)->where('active', true)->paginate(10);
+        $users = User::query();
+        $users->where('id', '<>', $this->user->id)->where('active', true);
+
+        return $this->getFilteredData($users, $request);
     }
 
-    final public function getAllNotActiveUsers(): LengthAwarePaginator
+    private function getFilteredData(Builder $builder, Request $request): LengthAwarePaginator
     {
-        return User::where('id', '<>', $this->user->id)->where('active', false)->paginate(10);
+        $perPage = $request->input('per_page', 10);
+        $users = app(Pipeline::class)
+            ->send($builder)
+            ->through([
+                SearchBy::class,
+                SortBy::class
+            ])->thenReturn();
+        if ($perPage !== 'all') {
+            $users = $users->paginate((int) $perPage);
+        } else {
+            $users = $users->paginate($users->count());
+        }
+        return $users;
+    }
+
+    final public function getAllNotActiveUsers(Request $request): LengthAwarePaginator
+    {
+        return $this->getFilteredData(User::where('id', '<>', $this->user->id)->where('active', false), $request);
     }
 
     final public function getUserById(int $id): User

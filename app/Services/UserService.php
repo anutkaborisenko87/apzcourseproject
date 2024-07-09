@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use DateTime;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -26,20 +28,24 @@ class UserService implements IUserService
         return (new UserResource($this->userRepository->profile()))->resolve();
     }
 
-    final public function getAllActiveUsers(): array
+    final public function getAllActiveUsers(Request $request): array
     {
-        $users = $this->userRepository->getAllActiveUsers();
-        $usersResp = $users->toArray();
-        $usersResp['data'] = UserResource::collection($users->getCollection())->resolve();
-        return $usersResp;
+        $users = $this->userRepository->getAllActiveUsers($request);
+        return $this->formatRespData($users, $request);
     }
 
-    final public function getAllNotActiveUsers(): array
+    final public function getAllNotActiveUsers(Request $request): array
     {
-        $users = $this->userRepository->getAllNotActiveUsers();
-        $usersResp = $users->toArray();
-        $usersResp['data'] = UserResource::collection($users->getCollection())->resolve();
-        return $usersResp;
+        $users = $this->userRepository->getAllNotActiveUsers($request);
+        return $this->formatRespData($users, $request);
+    }
+
+    private function formatRespData(LengthAwarePaginator $usersPaginated, Request $request): array
+    {
+        $usersResp = $usersPaginated->toArray();
+        $usersResp['data'] = UserResource::collection($usersPaginated->getCollection())->resolve();
+        $requestData = $request->except(['page', 'per_page']);
+        return array_merge($usersResp, $requestData);
     }
 
     final public function createUser(array $userData): array

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UsersRequests\CreateUserRequest;
 use App\Http\Requests\Api\UsersRequests\UpdateUserRequest;
 use App\Services\UserService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Mockery\Exception;
 
@@ -25,15 +26,15 @@ class UsersController extends Controller
         return response($profile);
     }
 
-    final public function indexActiveUsers(): Response
+    final public function indexActiveUsers(Request $request): Response
     {
-        $activeUsers = $this->userService->getAllActiveUsers();
+        $activeUsers = $this->userService->getAllActiveUsers($request);
         return response($activeUsers);
     }
 
-    final public function indexNotActiveUsers(): Response
+    final public function indexNotActiveUsers(Request $request): Response
     {
-        $activeUsers = $this->userService->getAllNotActiveUsers();
+        $activeUsers = $this->userService->getAllNotActiveUsers($request);
         return response($activeUsers);
     }
 

@@ -2,10 +2,9 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Illuminate\Http\Response;
 
-class UsersControllerException extends Exception
+class UsersControllerException extends AbstractClassException
 {
     public static function getUserByIdError(int $id): self
     {

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Interfaces\ModelInterfaces\SearchableInterface;
+use App\Traits\Sortable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,10 +11,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements SearchableInterface
 {
     use HasApiTokens, HasFactory, Notifiable;
     use HasRoles;
+    use Sortable;
 
     /**
      * The attributes that are mass assignable.
@@ -84,5 +87,21 @@ class User extends Authenticatable
     final public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'user_id', 'id');
+    }
+
+    public static function getSearchableFields(): array
+    {
+        return [
+            'last_name',
+            'first_name',
+            'patronymic_name',
+            'email',
+            'city',
+            'street',
+            'house_number',
+            'apartment_number',
+            'birth_date',
+            'birth_year',
+        ];
     }
 }

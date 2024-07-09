@@ -228,6 +228,83 @@ use OpenApi\Annotations as OA;
  *               format="int32"
  *           )
  *      ),
+ *     @OA\Parameter(
+ *           name="per_page",
+ *           in="query",
+ *           description="Number of users per page.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="integer",
+ *               format="int32",
+ *               default="10"
+ *           )
+ *      ),
+ *     @OA\Parameter(
+ *           name="sort_by",
+ *           in="query",
+ *           description="Name of field which by you want to sort users.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="string",
+ *               enum={
+ *                        "id",
+ *                        "last_name",
+ *                        "first_name",
+ *                        "patronymic_name",
+ *                        "sex",
+ *                        "email",
+ *                        "password",
+ *                        "city",
+ *                        "street",
+ *                        "house_number",
+ *                        "apartment_number",
+ *                        "active",
+ *                        "birth_date",
+ *                        "birth_year"
+ *                    }
+ *           )
+ *      ),
+ *     @OA\Parameter(
+ *           name="sort_direction",
+ *           in="query",
+ *           description="Direction of sorting.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="string",
+ *               enum={"asc", "desc"}
+ *           )
+ *      ),
+ *     @OA\Parameter(
+ *           name="search_by",
+ *           in="query",
+ *           description="Search by which field.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="string",
+ *               enum={
+ *                     "all",
+ *                     "last_name",
+ *                     "first_name",
+ *                     "patronymic_name",
+ *                     "email",
+ *                     "city",
+ *                     "street",
+ *                     "house_number",
+ *                     "apartment_number",
+ *                     "birth_date",
+ *                     "birth_year"
+ *                    }
+ *           )
+ *      ),
+ *     @OA\Parameter(
+ *           name="search_term",
+ *           in="query",
+ *           description="What need to search.",
+ *           required=false,
+ *           @OA\Schema(
+ *               type="string"
+ *           )
+ *      ),
  *      @OA\Response(
  *          response=200,
  *          description="Active userslist "
@@ -264,6 +341,83 @@ use OpenApi\Annotations as OA;
  *               format="int32"
  *           )
  *      ),
+ *          @OA\Parameter(
+ *            name="per_page",
+ *            in="query",
+ *            description="Number of users per page.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="integer",
+ *                format="int32",
+ *                default="10"
+ *            )
+ *       ),
+ *      @OA\Parameter(
+ *            name="sort_by",
+ *            in="query",
+ *            description="Name of field which by you want to sort users.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="string",
+ *                enum={
+ *                         "id",
+ *                         "last_name",
+ *                         "first_name",
+ *                         "patronymic_name",
+ *                         "sex",
+ *                         "email",
+ *                         "password",
+ *                         "city",
+ *                         "street",
+ *                         "house_number",
+ *                         "apartment_number",
+ *                         "active",
+ *                         "birth_date",
+ *                         "birth_year"
+ *                     }
+ *            )
+ *       ),
+ *      @OA\Parameter(
+ *            name="sort_direction",
+ *            in="query",
+ *            description="Direction of sorting.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="string",
+ *                enum={"asc", "desc"}
+ *            )
+ *       ),
+ *      @OA\Parameter(
+ *            name="search_by",
+ *            in="query",
+ *            description="Search by which field.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="string",
+ *                enum={
+ *                      "all",
+ *                      "last_name",
+ *                      "first_name",
+ *                      "patronymic_name",
+ *                      "email",
+ *                      "city",
+ *                      "street",
+ *                      "house_number",
+ *                      "apartment_number",
+ *                      "birth_date",
+ *                      "birth_year"
+ *                     }
+ *            )
+ *       ),
+ *      @OA\Parameter(
+ *            name="search_term",
+ *            in="query",
+ *            description="What need to search.",
+ *            required=false,
+ *            @OA\Schema(
+ *                type="string"
+ *            )
+ *       ),
  *      @OA\Response(
  *          response=200,
  *          description="Active userslist "
