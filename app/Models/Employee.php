@@ -2,16 +2,21 @@
 
 namespace App\Models;
 
+use App\Interfaces\ModelInterfaces\SearchableInterface;
 use App\Traits\HasUser;
+use App\Traits\Sortable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Employee extends User
+class Employee extends Model implements SearchableInterface
 {
     use HasUser;
     use HasFactory;
+    use Sortable;
+
     protected $table = 'employees';
     protected $fillable = [
         'user_id',
@@ -66,5 +71,17 @@ class Employee extends User
     final public function cultural_events(): HasMany
     {
         return $this->hasMany(CulturalEvent::class, 'employee_id', 'id');
+    }
+
+    public static function getSearchableFields(): array
+    {
+        return [
+            'phone',
+            'contract_number',
+            'passport_data',
+            'medical_card_number',
+            'employment_date',
+            'date_dismissal',
+        ];
     }
 }

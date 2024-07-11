@@ -1,20 +1,11 @@
 <?php
 
-namespace App\QueryFilters;
+namespace App\Traits;
 
-use App\Models\User;
-
-class SearchBy extends UsersFilter
+trait FormatSearchableFields
 {
-
-    function applyFilter($builder, $request)
+    public function formatFilter(&$builder, string $field, array $fields, string $searchTerm)
     {
-        $field = $request->input($this->filterName(), 'all');
-        $searchTerm = $request->input('search_term', '');
-        if ($searchTerm === '') {
-            return $builder;
-        }
-        $fields = User::getSearchableFields();
         if ($field === 'all') {
             $builder->where(function ($query) use ($field, $searchTerm, $fields) {
                 array_walk($fields, function ($field) use (&$query, $searchTerm) {

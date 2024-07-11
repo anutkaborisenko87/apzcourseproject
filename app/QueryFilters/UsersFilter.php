@@ -18,7 +18,7 @@ abstract class UsersFilter
 
     }
 
-    abstract function applyFilter($builder, $request);
+    abstract public function applyFilter($builder, $request);
 
     protected function filterName()
     {

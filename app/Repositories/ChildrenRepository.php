@@ -5,9 +5,16 @@ namespace App\Repositories;
 use App\Exceptions\ChildrenControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IChildrenRepository;
 use App\Models\Children;
+use App\Models\User;
+use App\QueryFilters\ChildSearchBy;
+use App\QueryFilters\ChildSortBy;
+use App\QueryFilters\UserSearchBy;
+use App\QueryFilters\UserSortBy;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pipeline\Pipeline;
 
 class ChildrenRepository implements IChildrenRepository
 {
@@ -47,17 +54,16 @@ class ChildrenRepository implements IChildrenRepository
         }
     }
 
-    final public function getAllChildrenList(): LengthAwarePaginator
+    final public function getAllChildrenList(Request $request): LengthAwarePaginator
     {
         try {
-            return Children::with('group')
-                ->with('user')->paginate(10);
+            return $this->formatData(Children::query(), $request);
         } catch (Exception $exception) {
             throw ChildrenControllerException::childrenListError();
         }
     }
 
-    final public function getAllChildrenForEnrollment(): LengthAwarePaginator
+    final public function getAllChildrenForEnrollment(Request $request): LengthAwarePaginator
     {
         try {
             return Children::whereNull('enrollment_date')
@@ -68,7 +74,7 @@ class ChildrenRepository implements IChildrenRepository
         }
     }
 
-    final public function getAllChildrenInTraining(): LengthAwarePaginator
+    final public function getAllChildrenInTraining(Request $request): LengthAwarePaginator
     {
         try {
             $today = date('Y-m-d');
@@ -84,7 +90,7 @@ class ChildrenRepository implements IChildrenRepository
         }
     }
 
-    final public function getAllGraduatedChildren(): LengthAwarePaginator
+    final public function getAllGraduatedChildren(Request $request): LengthAwarePaginator
     {
         try {
             $today = date('Y-m-d');
@@ -94,6 +100,33 @@ class ChildrenRepository implements IChildrenRepository
         } catch (Exception $exception) {
             throw ChildrenControllerException::childrenListError();
         }
+
+    }
+    private function formatData($childrenQuery, Request $request): LengthAwarePaginator
+    {
+        $perPage = $request->input('per_page', 10);
+        $users = app(Pipeline::class)
+            ->send(User::query())
+            ->through([
+                UserSearchBy::class,
+                UserSortBy::class,
+            ])->thenReturn();
+        $usersIds = $users->pluck('id')->toArray();
+        $childrenList = $childrenQuery->whereHas('user', function ($query) use ($usersIds) {
+            $query->whereIn('user_id', $usersIds);
+        });
+        $childrenList = app(Pipeline::class)
+            ->send($childrenList)
+            ->through([
+                ChildSearchBy::class,
+                ChildSortBy::class
+            ])->thenReturn();
+        if ($perPage !== 'all') {
+            $childrenList =  $childrenList->paginate((int) $perPage);
+        } else {
+            $childrenList =  $childrenList->paginate($childrenList->count());
+        }
+        return $childrenList;
     }
 
     final public function getChildById(int $childId): Children

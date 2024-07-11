@@ -4,9 +4,9 @@ namespace App\QueryFilters;
 
 use App\Models\User;
 
-class SortBy extends UsersFilter
+class UserSortBy extends UsersFilter
 {
-    function applyFilter($builder, $request)
+    public function applyFilter($builder, $request)
     {
         $field = $request->input($this->filterName(), 'id');
         $sortableFields = User::getSortableFields();

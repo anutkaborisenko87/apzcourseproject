@@ -5,26 +5,57 @@ namespace App\Repositories;
 use App\Exceptions\ParrentControllerException;
 use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
 use App\Models\Parrent;
+use App\Models\User;
+use App\QueryFilters\ParrentSearchBy;
+use App\QueryFilters\ParrentSortBy;
+use App\QueryFilters\UserSearchBy;
+use App\QueryFilters\UserSortBy;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pipeline\Pipeline;
 
 class ParrentsRepository implements IParrentsRepository
 {
 
-    final public function getActiveParrents(): LengthAwarePaginator
+    final public function getActiveParrents(Request $request): LengthAwarePaginator
     {
         try {
-            $parrents = Parrent::whereHas('user', function ($query) {
-                $query->where('active', true);
-            })
-                ->with('children_relations')
-                ->with('user')->paginate(10);
-            return $parrents;
+            return $this->formatParrentsData(User::where('active', true), $request);
         } catch (Exception $exception) {
             throw ParrentControllerException::getActiveParrentsError($exception->getCode());
         }
+    }
+
+    private function formatParrentsData($usersQuery, Request $request): LengthAwarePaginator
+    {
+        $perPage = $request->input('per_page', 10);
+        $users = app(Pipeline::class)
+            ->send($usersQuery)
+            ->through([
+                UserSearchBy::class,
+                UserSortBy::class,
+            ])->thenReturn();
+        $usersIds = $users->pluck('id')->toArray();
+        $parrents = Parrent::whereHas('user', function ($query) use ($usersIds) {
+            $query->whereIn('id', $usersIds);
+        });
+        $parrents = app(Pipeline::class)
+            ->send($parrents)
+            ->through([
+                ParrentSearchBy::class,
+                ParrentSortBy::class
+            ])->thenReturn();
+        $parrents = $parrents->with('children_relations')->with('user');
+
+        if ($perPage !== 'all') {
+            $parrents = $parrents->paginate((int)$perPage);
+        } else {
+            $parrents = $parrents->paginate($parrents->count());
+        }
+        return $parrents;
     }
 
     final public function getActiveParrentsForSelect(): Collection
@@ -51,14 +82,10 @@ class ParrentsRepository implements IParrentsRepository
         }
     }
 
-    final public function getNotActiveParrents(): LengthAwarePaginator
+    final public function getNotActiveParrents(Request $request): LengthAwarePaginator
     {
         try {
-            return Parrent::whereHas('user', function ($query) {
-                $query->where('active', false);
-            })
-                ->with('children_relations')
-                ->with('user')->paginate(10);
+            return  $this->formatParrentsData(User::where('active', false), $request);
         } catch (Exception $exception) {
             throw ParrentControllerException::getNotActiveParrentsError($exception->getCode());
         }

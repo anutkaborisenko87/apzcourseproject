@@ -4,18 +4,20 @@ namespace App\Services;
 
 use App\Http\Resources\ChildrenForSelectResource;
 use App\Http\Resources\ChildrenResource;
+use App\Interfaces\RepsitotiesInterfaces\IChildrenRepository;
+use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
 use App\Interfaces\ServicesInterfaces\IChildrenService;
-use App\Repositories\ChildrenRepository;
-use App\Repositories\UserRepository;
 use Exception;
 use DateTime;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ChildrenService implements IChildrenService
 {
-    private $childrenRepository;
-    private $userRepository;
+    private IChildrenRepository $childrenRepository;
+    private IUserRepository $userRepository;
 
-    public function __construct(ChildrenRepository $childrenRepository, UserRepository $userRepository)
+    public function __construct(IChildrenRepository $childrenRepository, IUserRepository $userRepository)
     {
         $this->childrenRepository = $childrenRepository;
         $this->userRepository = $userRepository;
@@ -36,36 +38,36 @@ class ChildrenService implements IChildrenService
         return ChildrenForSelectResource::collection($this->childrenRepository->getChildrenForGroupSelect())->resolve();
     }
 
-    final public function allChildrenList(): array
+    final public function allChildrenList(Request $request): array
     {
-        $repoList = $this->childrenRepository->getAllChildrenList();
-        $resp = $repoList->toArray();
-        $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
-        return $resp;
+        $repoList = $this->childrenRepository->getAllChildrenList($request);
+        return $this->formatRespData($repoList, $request);
     }
 
-    final public function allChildrenForEnrolmentList(): array
+    final public function allChildrenForEnrolmentList(Request $request): array
     {
-        $repoList = $this->childrenRepository->getAllChildrenForEnrollment();
-        $resp = $repoList->toArray();
-        $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
-        return $resp;
+        $repoList = $this->childrenRepository->getAllChildrenForEnrollment($request);
+        return $this->formatRespData($repoList, $request);
     }
 
-    final public function allChildrenInTrainingList(): array
+    final public function allChildrenInTrainingList(Request $request): array
     {
-        $repoList = $this->childrenRepository->getAllChildrenInTraining();
-        $resp = $repoList->toArray();
-        $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
-        return $resp;
+        $repoList = $this->childrenRepository->getAllChildrenInTraining($request);
+        return $this->formatRespData($repoList, $request);
     }
 
-    final public function allGraduatedChildrenList(): array
+    final public function allGraduatedChildrenList(Request $request): array
     {
-        $repoList = $this->childrenRepository->getAllGraduatedChildren();
-        $resp = $repoList->toArray();
-        $resp['data'] = ChildrenResource::collection($repoList->getCollection())->resolve();
-        return $resp;
+        $repoList = $this->childrenRepository->getAllGraduatedChildren($request);
+        return $this->formatRespData($repoList, $request);
+    }
+
+    private function formatRespData(LengthAwarePaginator $childrenPaginated, Request $request): array
+    {
+        $childrenResp = $childrenPaginated->toArray();
+        $childrenResp['data'] = ChildrenResource::collection($childrenPaginated->getCollection())->resolve();
+        $requestData = $request->except(['page', 'per_page']);
+        return array_merge($childrenResp, $requestData);
     }
 
     final public function getChildInfo(int $childId): array

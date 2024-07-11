@@ -7,6 +7,7 @@ use App\Http\Requests\Api\EmployeesRequests\CreateEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\FireEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\UpdateEmployeeRequest;
 use App\Interfaces\ServicesInterfaces\IEmployeesService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class EmployeesController extends Controller
@@ -18,9 +19,9 @@ class EmployeesController extends Controller
         $this->employeeService = $employeeService;
     }
 
-    final public function indexActiveEmployees(): Response
+    final public function indexActiveEmployees(Request $request): Response
     {
-        return response($this->employeeService->getActiveEmployeesList());
+        return response($this->employeeService->getActiveEmployeesList($request));
     }
 
     final public function indexActiveTeachers(): Response
@@ -28,15 +29,15 @@ class EmployeesController extends Controller
         return response($this->employeeService->getActiveTeachersList());
     }
 
-    final public function indexNotActiveEmployees(): Response
+    final public function indexNotActiveEmployees(Request $request): Response
     {
-        return response($this->employeeService->getActiveTeachersList());
+        return response($this->employeeService->getNotActiveEmployeesList($request));
 
     }
 
-    final public function indexWorkingEmployees(): Response
+    final public function indexWorkingEmployees(Request $request): Response
     {
-        return response($this->employeeService->getWorkingEmployeesList());
+        return response($this->employeeService->getWorkingEmployeesList($request));
     }
 
     final public function storeEmployee(CreateEmployeeRequest $request): Response

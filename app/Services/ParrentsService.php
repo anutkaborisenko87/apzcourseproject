@@ -4,28 +4,35 @@ namespace App\Services;
 
 use App\Http\Resources\ParrentForSelectResource;
 use App\Http\Resources\ParrentResource;
+use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
+use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
 use App\Interfaces\ServicesInterfaces\IParrentsService;
-use App\Repositories\ParrentsRepository;
-use App\Repositories\UserRepository;
-use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ParrentsService implements IParrentsService
 {
-    private $parrentsRepository;
-    private $userRepository;
+    private IParrentsRepository $parrentsRepository;
+    private IUserRepository $userRepository;
 
-    public function __construct(ParrentsRepository $parrentsRepository, UserRepository $userRepository)
+    public function __construct(IParrentsRepository $parrentsRepository, IUserRepository $userRepository)
     {
         $this->parrentsRepository = $parrentsRepository;
         $this->userRepository = $userRepository;
     }
 
-    final public function getActiveParrentsList(): array
+    final public function getActiveParrentsList(Request $request): array
     {
-        $parrents = $this->parrentsRepository->getActiveParrents();
-        $resp = $parrents->toArray();
-        $resp['data'] = ParrentResource::collection($parrents->getCollection())->resolve();
-        return $resp;
+        $parrents = $this->parrentsRepository->getActiveParrents($request);
+        return $this->formatRespData($parrents, $request);
+    }
+
+    private function formatRespData(LengthAwarePaginator $parrentsPaginated, Request $request): array
+    {
+        $parrentsResp = $parrentsPaginated->toArray();
+        $parrentsResp['data'] = ParrentResource::collection($parrentsPaginated->getCollection())->resolve();
+        $requestData = $request->except(['page', 'per_page']);
+        return array_merge($parrentsResp, $requestData);
     }
 
     final public function getParrentsListForSelect(): array
@@ -40,12 +47,10 @@ class ParrentsService implements IParrentsService
         return ParrentForSelectResource::collection($parrents)->resolve();
     }
 
-    final public function getNotActiveParrentsList(): array
+    final public function getNotActiveParrentsList(Request $request): array
     {
-        $parrents = $this->parrentsRepository->getNotActiveParrents();
-        $resp = $parrents->toArray();
-        $resp['data'] = ParrentResource::collection($parrents->getCollection())->resolve();
-        return $resp;
+        $parrents = $this->parrentsRepository->getNotActiveParrents($request);
+        return  $this->formatRespData($parrents, $request);
     }
 
     final public function getParrentInfo(int $id): array

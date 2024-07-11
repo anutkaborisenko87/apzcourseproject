@@ -2,10 +2,12 @@
 
 namespace App\Interfaces\ServicesInterfaces;
 
+use Illuminate\Http\Request;
+
 interface IParrentsService
 {
-    public function getActiveParrentsList(): array;
-    public function getNotActiveParrentsList(): array;
+    public function getActiveParrentsList(Request $request): array;
+    public function getNotActiveParrentsList(Request $request): array;
     public function getParrentsListForSelect(): array;
     public function getParrentsListForUpdateSelect(int $childId): array;
     public function getParrentInfo(int $id): array;

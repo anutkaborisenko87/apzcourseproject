@@ -8,7 +8,7 @@ use App\Interfaces\RepsitotiesInterfaces\IGroupRepository;
 use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
 use App\Interfaces\RepsitotiesInterfaces\IPositionsRepository;
 use App\Interfaces\RepsitotiesInterfaces\IRoleRepository;
-use App\Interfaces\RepsitotiesInterfaces\IUserRpository;
+use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
 use App\Interfaces\ServicesInterfaces\IChildrenService;
 use App\Interfaces\ServicesInterfaces\IEmployeesService;
 use App\Interfaces\ServicesInterfaces\IGroupService;
@@ -47,7 +47,7 @@ class BindingServiceProvider extends ServiceProvider
         $this->app->bind(IParrentsRepository::class, ParrentsRepository::class);
         $this->app->bind(IPositionsRepository::class, PositionsRepository::class);
         $this->app->bind(IRoleRepository::class, RoleRepository::class);
-        $this->app->bind(IUserRpository::class, UserRepository::class);
+        $this->app->bind(IUserRepository::class, UserRepository::class);
         $this->app->bind(IChildrenService::class, ChildrenService::class);
         $this->app->bind(IEmployeesService::class, EmployeesService::class);
         $this->app->bind(IGroupService::class, GroupService::class);

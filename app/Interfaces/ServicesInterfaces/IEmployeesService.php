@@ -2,12 +2,14 @@
 
 namespace App\Interfaces\ServicesInterfaces;
 
+use Illuminate\Http\Request;
+
 interface IEmployeesService
 {
-    public function getActiveEmployeesList(): array;
+    public function getActiveEmployeesList(Request $request): array;
     public function getActiveTeachersList(): array;
-    public function getNotActiveEmployeesList(): array;
-    public function getWorkingEmployeesList(): array;
+    public function getNotActiveEmployeesList(Request $request): array;
+    public function getWorkingEmployeesList(Request $request): array;
     public function createEmployee(array $data): array;
     public function showEmployeeInfo(int $id): array;
     public function fireEmployee(int $id, array $data): array;

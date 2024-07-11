@@ -5,17 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UsersRequests\CreateUserRequest;
 use App\Http\Requests\Api\UsersRequests\UpdateUserRequest;
-use App\Services\UserService;
+use App\Interfaces\ServicesInterfaces\IUserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Mockery\Exception;
 
 
 class UsersController extends Controller
 {
-    private UserService $userService;
+    private IUserService $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct(IUserService $userService)
     {
         $this->userService = $userService;
     }

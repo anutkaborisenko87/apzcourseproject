@@ -3,10 +3,10 @@
 namespace App\Repositories;
 
 use App\Exceptions\UsersControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IUserRpository;
+use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
 use App\Models\User;
-use App\QueryFilters\SearchBy;
-use App\QueryFilters\SortBy;
+use App\QueryFilters\UserSearchBy;
+use App\QueryFilters\UserSortBy;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Auth;
 
-class UserRepository implements IUserRpository
+class UserRepository implements IUserRepository
 {
     private $user;
 
@@ -44,9 +44,11 @@ class UserRepository implements IUserRpository
         $users = app(Pipeline::class)
             ->send($builder)
             ->through([
-                SearchBy::class,
-                SortBy::class
+                UserSearchBy::class,
+                UserSortBy::class
             ])->thenReturn();
+
+
         if ($perPage !== 'all') {
             $users = $users->paginate((int) $perPage);
         } else {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ParrentsRequests\CreateParrentRequest;
 use App\Http\Requests\Api\ParrentsRequests\UpdateParrentRequest;
 use App\Interfaces\ServicesInterfaces\IParrentsService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ParrentsController extends Controller
@@ -17,9 +18,9 @@ class ParrentsController extends Controller
         $this->parrentsService = $parrentsService;
     }
 
-    final public function indexActive(): Response
+    final public function indexActive(Request $request): Response
     {
-        return response($this->parrentsService->getActiveParrentsList());
+        return response($this->parrentsService->getActiveParrentsList($request));
     }
 
     final public function indexForSelect(int $childId = null): Response
@@ -28,9 +29,9 @@ class ParrentsController extends Controller
         return response($this->parrentsService->getParrentsListForSelect());
     }
 
-    final public function indexNotActive(): Response
+    final public function indexNotActive(Request $request): Response
     {
-        return response($this->parrentsService->getNotActiveParrentsList());
+        return response($this->parrentsService->getNotActiveParrentsList($request));
     }
 
     final public function show(int $parrent): Response

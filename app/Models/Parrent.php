@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use App\Interfaces\ModelInterfaces\SearchableInterface;
 use App\Traits\HasUser;
+use App\Traits\Sortable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Parrent extends User
+class Parrent extends Model implements SearchableInterface
 {
+    use HasFactory;
     use HasUser;
+    use Sortable;
 
     protected $table = 'parrents';
     protected $fillable = [
@@ -33,4 +39,13 @@ class Parrent extends User
         return $this->belongsToMany(CulturalEvent::class, 'cult_ev_visitior', 'parrent_id', 'cultural_event_id')->withPivot('reaction');
     }
 
+    public static function getSearchableFields(): array
+    {
+        return [
+            'phone',
+            'work_place',
+            'passport_data',
+            'marital_status'
+        ];
+    }
 }

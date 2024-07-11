@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ChildrenRequests\CreateChildRequest;
 use App\Http\Requests\Api\ChildrenRequests\UpdateChildRequest;
 use App\Interfaces\ServicesInterfaces\IChildrenService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ChildrenController extends Controller
@@ -33,24 +34,24 @@ class ChildrenController extends Controller
 
     }
 
-    final public function indexAllChildren(): Response
+    final public function indexAllChildren(Request $request): Response
     {
-        return response($this->childrenService->allChildrenList());
+        return response($this->childrenService->allChildrenList($request));
     }
 
-    final public function indexForEnrolmentChildren(): Response
+    final public function indexForEnrolmentChildren(Request $request): Response
     {
-        return response($this->childrenService->allChildrenForEnrolmentList());
+        return response($this->childrenService->allChildrenForEnrolmentList($request));
     }
 
-    final public function indexInTrainingChildren(): Response
+    final public function indexInTrainingChildren(Request $request): Response
     {
-        return response($this->childrenService->allChildrenInTrainingList());
+        return response($this->childrenService->allChildrenInTrainingList($request));
     }
 
-    final public function indexGraduatedChildren(): Response
+    final public function indexGraduatedChildren(Request $request): Response
     {
-        return response($this->childrenService->allGraduatedChildrenList());
+        return response($this->childrenService->allGraduatedChildrenList($request));
     }
 
     final public function showChild(int $childId): Response

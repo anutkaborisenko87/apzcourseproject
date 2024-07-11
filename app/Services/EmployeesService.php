@@ -2,30 +2,39 @@
 
 namespace App\Services;
 
+use App\Exceptions\EmployeesControllerException;
+use App\Exceptions\UsersControllerException;
 use App\Http\Resources\EmployeeResource;
 use App\Http\Resources\TeachersForSelectResource;
+use App\Interfaces\RepsitotiesInterfaces\IEmployeesRepository;
+use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
 use App\Interfaces\ServicesInterfaces\IEmployeesService;
-use App\Repositories\EmployeesRepository;
-use App\Repositories\UserRepository;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Permission\Models\Role;
 
 class EmployeesService implements IEmployeesService
 {
-    private EmployeesRepository $teacherRepository;
-    private UserRepository $userRepository;
+    private IEmployeesRepository $teacherRepository;
+    private IUserRepository $userRepository;
 
-    public function __construct(EmployeesRepository $teacherRepository, UserRepository $userRepository)
+    public function __construct(IEmployeesRepository $teacherRepository, IUserRepository $userRepository)
     {
         $this->teacherRepository = $teacherRepository;
         $this->userRepository = $userRepository;
     }
 
-    final public function getActiveEmployeesList(): array
+    final public function getActiveEmployeesList(Request $request): array
     {
-        $teachers = $this->teacherRepository->getAllActiveEmployees();
-        $respData = $teachers->toArray();
-        $respData['data'] = EmployeeResource::collection($teachers->getCollection())->resolve();
-        return $respData;
+        $employees = $this->teacherRepository->getAllActiveEmployees($request);
+        return $this->formatRespData($employees, $request);
+    }
+    private function formatRespData(LengthAwarePaginator $employeesPaginated, Request $request): array
+    {
+        $employeesResp = $employeesPaginated->toArray();
+        $employeesResp['data'] = EmployeeResource::collection($employeesPaginated->getCollection())->resolve();
+        $requestData = $request->except(['page', 'per_page']);
+        return array_merge($employeesResp, $requestData);
     }
 
     final public function getActiveTeachersList(): array
@@ -34,20 +43,16 @@ class EmployeesService implements IEmployeesService
         return TeachersForSelectResource::collection($teachers)->resolve();
     }
 
-    final public function getNotActiveEmployeesList(): array
+    final public function getNotActiveEmployeesList(Request $request): array
     {
-        $teachers = $this->teacherRepository->getAllNotActiveEmployees();
-        $respData = $teachers->toArray();
-        $respData['data'] = EmployeeResource::collection($teachers->getCollection())->resolve();
-        return $respData;
+        $employees = $this->teacherRepository->getAllNotActiveEmployees($request);
+        return $this->formatRespData($employees, $request);
     }
 
-    final public function getWorkingEmployeesList(): array
+    final public function getWorkingEmployeesList(Request $request): array
     {
-        $teachers = $this->teacherRepository->getAllWorkingEmployees();
-        $respData = $teachers->toArray();
-        $respData['data'] = EmployeeResource::collection($teachers->getCollection())->resolve();
-        return $respData;
+        $employees = $this->teacherRepository->getAllWorkingEmployees($request);
+        return $this->formatRespData($employees, $request);
     }
 
     final public function createEmployee(array $data): array
@@ -60,10 +65,7 @@ class EmployeesService implements IEmployeesService
         }
         $employeeData = $data['employee'];
         $employeeData['user_id'] = $createdUser->id;
-        $createdEmployee = $this->teacherRepository->createEmployee($employeeData);
-        if (!$createdEmployee) {
-            $this->userRepository->deleteUser($createdUser);
-        }
+        $createdEmployee = $this->teacherRepository->createEmployee($employeeData, $createdUser);
         return (new EmployeeResource($createdEmployee))->resolve();
     }
 
