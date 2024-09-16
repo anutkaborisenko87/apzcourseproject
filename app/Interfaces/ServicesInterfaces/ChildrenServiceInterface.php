@@ -4,7 +4,7 @@ namespace App\Interfaces\ServicesInterfaces;
 
 use Illuminate\Http\Request;
 
-interface IChildrenService
+interface ChildrenServiceInterface
 {
     public function childrenForSelectList(): array;
     public function childrenForUpdateSelectList(int $parrenId): array;

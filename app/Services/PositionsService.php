@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Http\Resources\PositionResource;
-use App\Interfaces\ServicesInterfaces\IPositionsService;
+use App\Interfaces\ServicesInterfaces\PositionsServiceInterface;
 use App\Models\Position;
 use App\Repositories\PositionsRepository;
 use Exception;
 
-class PositionsService implements IPositionsService
+class PositionsService implements PositionsServiceInterface
 {
     private $positionsRepository;
 

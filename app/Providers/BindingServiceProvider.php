@@ -2,20 +2,20 @@
 
 namespace App\Providers;
 
-use App\Interfaces\RepsitotiesInterfaces\IChildrenRepository;
-use App\Interfaces\RepsitotiesInterfaces\IEmployeesRepository;
-use App\Interfaces\RepsitotiesInterfaces\IGroupRepository;
-use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
-use App\Interfaces\RepsitotiesInterfaces\IPositionsRepository;
-use App\Interfaces\RepsitotiesInterfaces\IRoleRepository;
-use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
-use App\Interfaces\ServicesInterfaces\IChildrenService;
-use App\Interfaces\ServicesInterfaces\IEmployeesService;
-use App\Interfaces\ServicesInterfaces\IGroupService;
-use App\Interfaces\ServicesInterfaces\IParrentsService;
-use App\Interfaces\ServicesInterfaces\IPositionsService;
-use App\Interfaces\ServicesInterfaces\IRolesService;
-use App\Interfaces\ServicesInterfaces\IUserService;
+use App\Interfaces\RepsitotiesInterfaces\ChildrenRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\EmployeesRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\GroupRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\ParrentsRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\PositionsRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\RoleRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
+use App\Interfaces\ServicesInterfaces\ChildrenServiceInterface;
+use App\Interfaces\ServicesInterfaces\EmployeesServiceInterface;
+use App\Interfaces\ServicesInterfaces\GroupServiceInterface;
+use App\Interfaces\ServicesInterfaces\ParrentsServiceInterface;
+use App\Interfaces\ServicesInterfaces\PositionsServiceInterface;
+use App\Interfaces\ServicesInterfaces\RolesServiceInterface;
+use App\Interfaces\ServicesInterfaces\UserServiceInterface;
 use App\Repositories\ChildrenRepository;
 use App\Repositories\EmployeesRepository;
 use App\Repositories\GroupRepository;
@@ -39,22 +39,22 @@ class BindingServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $this->app->bind(IChildrenRepository::class, ChildrenRepository::class);
-        $this->app->bind(IEmployeesRepository::class, EmployeesRepository::class);
-        $this->app->bind(IGroupRepository::class, GroupRepository::class);
-        $this->app->bind(IParrentsRepository::class, ParrentsRepository::class);
-        $this->app->bind(IPositionsRepository::class, PositionsRepository::class);
-        $this->app->bind(IRoleRepository::class, RoleRepository::class);
-        $this->app->bind(IUserRepository::class, UserRepository::class);
-        $this->app->bind(IChildrenService::class, ChildrenService::class);
-        $this->app->bind(IEmployeesService::class, EmployeesService::class);
-        $this->app->bind(IGroupService::class, GroupService::class);
-        $this->app->bind(IParrentsService::class, ParrentsService::class);
-        $this->app->bind(IPositionsService::class, PositionsService::class);
-        $this->app->bind(IRolesService::class, RolesService::class);
-        $this->app->bind(IUserService::class, UserService::class);
+        $this->app->bind(ChildrenRepositoryInterface::class, ChildrenRepository::class);
+        $this->app->bind(EmployeesRepositoryInterface::class, EmployeesRepository::class);
+        $this->app->bind(GroupRepositoryInterface::class, GroupRepository::class);
+        $this->app->bind(ParrentsRepositoryInterface::class, ParrentsRepository::class);
+        $this->app->bind(PositionsRepositoryInterface::class, PositionsRepository::class);
+        $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(ChildrenServiceInterface::class, ChildrenService::class);
+        $this->app->bind(EmployeesServiceInterface::class, EmployeesService::class);
+        $this->app->bind(GroupServiceInterface::class, GroupService::class);
+        $this->app->bind(ParrentsServiceInterface::class, ParrentsService::class);
+        $this->app->bind(PositionsServiceInterface::class, PositionsService::class);
+        $this->app->bind(RolesServiceInterface::class, RolesService::class);
+        $this->app->bind(UserServiceInterface::class, UserService::class);
     }
 
     /**
@@ -62,7 +62,7 @@ class BindingServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }

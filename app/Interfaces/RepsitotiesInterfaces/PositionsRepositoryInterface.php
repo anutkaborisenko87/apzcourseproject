@@ -5,7 +5,7 @@ namespace App\Interfaces\RepsitotiesInterfaces;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\Collection;
 
-interface IPositionsRepository
+interface PositionsRepositoryInterface
 {
     public function getPositions(): Collection;
     public function createPositionInfo(array $data): Position;

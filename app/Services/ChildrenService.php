@@ -4,20 +4,20 @@ namespace App\Services;
 
 use App\Http\Resources\ChildrenForSelectResource;
 use App\Http\Resources\ChildrenResource;
-use App\Interfaces\RepsitotiesInterfaces\IChildrenRepository;
-use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
-use App\Interfaces\ServicesInterfaces\IChildrenService;
+use App\Interfaces\RepsitotiesInterfaces\ChildrenRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
+use App\Interfaces\ServicesInterfaces\ChildrenServiceInterface;
 use Exception;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ChildrenService implements IChildrenService
+class ChildrenService implements ChildrenServiceInterface
 {
-    private IChildrenRepository $childrenRepository;
-    private IUserRepository $userRepository;
+    private ChildrenRepositoryInterface $childrenRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(IChildrenRepository $childrenRepository, IUserRepository $userRepository)
+    public function __construct(ChildrenRepositoryInterface $childrenRepository, UserRepositoryInterface $userRepository)
     {
         $this->childrenRepository = $childrenRepository;
         $this->userRepository = $userRepository;

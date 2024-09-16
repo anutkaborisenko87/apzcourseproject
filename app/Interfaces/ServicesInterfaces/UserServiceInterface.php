@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-interface IUserService
+interface UserServiceInterface
 {
     public function getProfile(): array;
     public function getAllActiveUsers(Request $request): array;

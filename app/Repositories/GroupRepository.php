@@ -3,15 +3,18 @@
 namespace App\Repositories;
 
 use App\Exceptions\GroupsControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IGroupRepository;
+use App\Interfaces\RepsitotiesInterfaces\GroupRepositoryInterface;
 use App\Models\Children;
 use App\Models\Group;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
 
-class GroupRepository implements IGroupRepository
+class GroupRepository implements GroupRepositoryInterface
 {
+    /**
+     * @throws GroupsControllerException
+     */
     final public function getGroupsForSelect(): Collection
     {
         try {
@@ -21,22 +24,38 @@ class GroupRepository implements IGroupRepository
         }
     }
 
+    /**
+     * @throws GroupsControllerException
+     */
     final public function getGroupsList(): Collection
     {
         try {
-            $today = now();
-            return Group::with([
+            $today = now()->format('Y-m-d');
+            return Group::withCount([
                 'children' => function ($query) use ($today) {
                     $query->where('enrollment_date', '<=', $today)
-                        ->where('graduation_date', '>=', $today);
+                        ->where(function ($q) use ($today) {
+                            $q->orWhere('graduation_date', '>=', $today)
+                                ->orWhereNull('graduation_date');
+                        });
                 },
                 'teachers' => function ($query) use ($today) {
-                    $query->wherePivot('date_start', '<=', $today)
-                        ->wherePivot('date_finish', '>=', $today);
+                    $query->whereHas('groups', function($q) use ($today) {
+                        $q->where('date_start', '<=', $today)
+                            ->where(function ($q) use ($today) {
+                                $q->where('date_finish', '>=', $today)
+                                    ->orWhereNull('date_finish');
+                            });
+                    });
                 },
                 'educationalPrograms' => function ($query) use ($today) {
-                    $query->wherePivot('date_start', '<=', $today)
-                        ->wherePivot('date_finish', '>=', $today);
+                    $query->whereHas('groups', function($q) use ($today) {
+                        $q->where('date_start', '<=', $today)
+                            ->where(function ($q) use ($today) {
+                                $q->where('date_finish', '>=', $today)
+                                    ->orWhereNull('date_finish');
+                            });
+                    });
                 },
             ])->get();
         } catch (Exception $exception) {
@@ -44,6 +63,9 @@ class GroupRepository implements IGroupRepository
         }
     }
 
+    /**
+     * @throws GroupsControllerException
+     */
     final public function getGroupById(int $groupId): ?Group
     {
         try {
@@ -55,6 +77,9 @@ class GroupRepository implements IGroupRepository
         }
     }
 
+    /**
+     * @throws GroupsControllerException
+     */
     final public function getGroupInfo(int $groupId, ?array $data = null): ?Group
     {
         try {
@@ -83,6 +108,9 @@ class GroupRepository implements IGroupRepository
         }
     }
 
+    /**
+     * @throws GroupsControllerException
+     */
     final public function addGroup(array &$data): Group
     {
         try {
@@ -128,6 +156,9 @@ class GroupRepository implements IGroupRepository
         }
     }
 
+    /**
+     * @throws GroupsControllerException
+     */
     final public function updateGroup(Group $group, array &$data): Group
     {
         try {
@@ -175,6 +206,9 @@ class GroupRepository implements IGroupRepository
         }
     }
 
+    /**
+     * @throws GroupsControllerException
+     */
     final public function deleteGroup(Group $group): bool
     {
         try {

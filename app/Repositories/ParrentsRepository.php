@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Exceptions\ParrentControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
+use App\Interfaces\RepsitotiesInterfaces\ParrentsRepositoryInterface;
 use App\Models\Parrent;
 use App\Models\User;
 use App\QueryFilters\ParrentSearchBy;
@@ -17,7 +17,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 
-class ParrentsRepository implements IParrentsRepository
+class ParrentsRepository implements ParrentsRepositoryInterface
 {
 
     final public function getActiveParrents(Request $request): LengthAwarePaginator

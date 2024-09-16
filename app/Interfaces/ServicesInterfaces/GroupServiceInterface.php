@@ -2,7 +2,7 @@
 
 namespace App\Interfaces\ServicesInterfaces;
 
-interface IGroupService
+interface GroupServiceInterface
 {
     public function getGroupsListForSelect(): array;
     public function getGroupsList(): array;

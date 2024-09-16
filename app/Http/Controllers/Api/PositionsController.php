@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\PositionsRequests\PositionsRequest;
-use App\Interfaces\ServicesInterfaces\IPositionsService;
+use App\Interfaces\ServicesInterfaces\PositionsServiceInterface;
 use Illuminate\Http\Response;
 
 class PositionsController extends Controller
 {
-    private IPositionsService $positionsService;
+    private PositionsServiceInterface $positionsService;
 
-    public function __construct(IPositionsService $positionsService)
+    public function __construct(PositionsServiceInterface $positionsService)
     {
         $this->positionsService = $positionsService;
     }

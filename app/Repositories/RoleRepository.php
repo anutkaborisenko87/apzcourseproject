@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\RepsitotiesInterfaces\IRoleRepository;
+use App\Interfaces\RepsitotiesInterfaces\RoleRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Spatie\Permission\Models\Role;
 
-class RoleRepository implements IRoleRepository
+class RoleRepository implements RoleRepositoryInterface
 {
 
     final public function getRoles(): Collection

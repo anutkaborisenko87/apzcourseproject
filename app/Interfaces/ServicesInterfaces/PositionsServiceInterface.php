@@ -2,7 +2,7 @@
 
 namespace App\Interfaces\ServicesInterfaces;
 
-interface IPositionsService
+interface PositionsServiceInterface
 {
     public function getPositionsList(): array;
     public function createPosition(array $data): array;

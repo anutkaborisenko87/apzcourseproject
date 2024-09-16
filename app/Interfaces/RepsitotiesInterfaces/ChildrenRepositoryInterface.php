@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-interface IChildrenRepository
+interface ChildrenRepositoryInterface
 {
     public function getChildrenForSelect(): Collection;
     public function getChildrenForUpdateSelect(int $parrentId): Collection;

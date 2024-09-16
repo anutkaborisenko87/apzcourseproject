@@ -4,7 +4,7 @@ namespace App\Interfaces\ServicesInterfaces;
 
 use Illuminate\Http\Request;
 
-interface IEmployeesService
+interface EmployeesServiceInterface
 {
     public function getActiveEmployeesList(Request $request): array;
     public function getActiveTeachersList(): array;

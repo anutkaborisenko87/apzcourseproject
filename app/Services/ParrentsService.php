@@ -4,18 +4,18 @@ namespace App\Services;
 
 use App\Http\Resources\ParrentForSelectResource;
 use App\Http\Resources\ParrentResource;
-use App\Interfaces\RepsitotiesInterfaces\IParrentsRepository;
-use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
-use App\Interfaces\ServicesInterfaces\IParrentsService;
+use App\Interfaces\RepsitotiesInterfaces\ParrentsRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
+use App\Interfaces\ServicesInterfaces\ParrentsServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ParrentsService implements IParrentsService
+class ParrentsService implements ParrentsServiceInterface
 {
-    private IParrentsRepository $parrentsRepository;
-    private IUserRepository $userRepository;
+    private ParrentsRepositoryInterface $parrentsRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(IParrentsRepository $parrentsRepository, IUserRepository $userRepository)
+    public function __construct(ParrentsRepositoryInterface $parrentsRepository, UserRepositoryInterface $userRepository)
     {
         $this->parrentsRepository = $parrentsRepository;
         $this->userRepository = $userRepository;

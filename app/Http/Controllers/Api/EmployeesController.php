@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\EmployeesRequests\CreateEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\FireEmployeeRequest;
 use App\Http\Requests\Api\EmployeesRequests\UpdateEmployeeRequest;
-use App\Interfaces\ServicesInterfaces\IEmployeesService;
+use App\Interfaces\ServicesInterfaces\EmployeesServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class EmployeesController extends Controller
 {
-    private IEmployeesService $employeeService;
+    private EmployeesServiceInterface $employeeService;
 
-    public function __construct(IEmployeesService $employeeService)
+    public function __construct(EmployeesServiceInterface $employeeService)
     {
         $this->employeeService = $employeeService;
     }

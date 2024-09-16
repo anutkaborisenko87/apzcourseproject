@@ -4,7 +4,7 @@ namespace App\Interfaces\ServicesInterfaces;
 
 use Illuminate\Http\Request;
 
-interface IParrentsService
+interface ParrentsServiceInterface
 {
     public function getActiveParrentsList(Request $request): array;
     public function getNotActiveParrentsList(Request $request): array;

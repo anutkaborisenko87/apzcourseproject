@@ -18,11 +18,25 @@ class GroupFullInfoResource extends JsonResource
         $data = [
             'id' => $this->id,
             'title' => $this->title,
-            'children' => $this->whenLoaded('children', ChildrenForSelectResource::collection($this->children)->resolve()),
-            'teachers' => $this->whenLoaded('teachers', $this->teachers),
-            'educationalPrograms' => $this->whenLoaded('educationalPrograms', $this->teachers),
+            'children' => $this->children_count ?? $this->whenLoaded('children', $this->children),
+            'teachers' => $this->teachers_count ?? $this->whenLoaded('teachers', $this->teachers),
+            'educationalPrograms' => $this->educational_programs_count ?? $this->whenLoaded('educationalPrograms', $this->educationalPrograms),
         ];
-        if (isset($data['teachers'])) {
+       if (isset($data['children']) && !is_numeric($data['children'])) {
+            $children = [];
+            $this->children->each(function ($item) use (&$children) {
+               $children[] = [
+                   'child_id' => $item->id,
+                   'child_name' => ($item->user->last_name ?? '') . ' ' . ($item->user->first_name ?? '') . ' ' . ($item->user->patronymic_name ?? ''),
+                   'enrolment_period' => [
+                       'from' => $item->enrollment_date,
+                       'to' => $item->graduation_date
+                   ]
+               ];
+            });
+            $data['children'] = $children;
+        }
+       if (isset($data['teachers']) && !is_numeric($data['teachers'])) {
             $teachers = [];
             $this->teachers->each(function ($item) use (&$teachers) {
                $teachers[] = [
@@ -34,9 +48,9 @@ class GroupFullInfoResource extends JsonResource
                    ]
                ];
             });
-            $data['educationalPrograms'] = $teachers;
+            $data['teachers'] = $teachers;
         }
-        if (isset($data['educationalPrograms'])) {
+        if (isset($data['educationalPrograms']) && !is_numeric($data['teachers'])) {
             $educationalPrograms = [];
             $this->educationalPrograms->each(function ($item) use (&$educationalPrograms) {
                $educationalPrograms[] = [

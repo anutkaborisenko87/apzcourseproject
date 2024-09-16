@@ -3,13 +3,13 @@
 namespace App\Repositories;
 
 use App\Exceptions\PositionsControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IPositionsRepository;
+use App\Interfaces\RepsitotiesInterfaces\PositionsRepositoryInterface;
 use App\Models\Position;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
 
-class PositionsRepository implements IPositionsRepository
+class PositionsRepository implements PositionsRepositoryInterface
 {
 
     final public function getPositions(): Collection

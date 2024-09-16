@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-interface IEmployeesRepository
+interface EmployeesRepositoryInterface
 {
     public function getAllActiveEmployees(Request $request): LengthAwarePaginator;
     public function getAllNotActiveEmployees(Request $request): LengthAwarePaginator;

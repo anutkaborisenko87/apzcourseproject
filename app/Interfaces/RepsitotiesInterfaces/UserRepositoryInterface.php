@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-interface IUserRepository
+interface UserRepositoryInterface
 {
     public function profile(): ?User;
     public function getAllActiveUsers(Request $request): LengthAwarePaginator;

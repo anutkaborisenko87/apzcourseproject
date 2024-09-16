@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-interface IParrentsRepository
+interface ParrentsRepositoryInterface
 {
     public function getActiveParrents(Request $request): LengthAwarePaginator;
     public function getActiveParrentsForSelect(): Collection;

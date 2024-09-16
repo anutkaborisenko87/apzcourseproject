@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Exceptions\ChildrenControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IChildrenRepository;
+use App\Interfaces\RepsitotiesInterfaces\ChildrenRepositoryInterface;
 use App\Models\Children;
 use App\Models\User;
 use App\QueryFilters\ChildSearchBy;
@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 
-class ChildrenRepository implements IChildrenRepository
+class ChildrenRepository implements ChildrenRepositoryInterface
 {
 
     final public function getChildrenForSelect(): Collection

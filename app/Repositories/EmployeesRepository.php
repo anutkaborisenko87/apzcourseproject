@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Exceptions\EmployeesControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IEmployeesRepository;
+use App\Interfaces\RepsitotiesInterfaces\EmployeesRepositoryInterface;
 use App\Models\Employee;
 use App\Models\User;
 use App\QueryFilters\EmployeeSearchBy;
@@ -17,30 +17,24 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 
-class EmployeesRepository implements IEmployeesRepository
+class EmployeesRepository implements EmployeesRepositoryInterface
 {
 
     final public function getAllActiveEmployees(Request $request): LengthAwarePaginator
     {
         try {
-            return $this->formatData(User::where('active', true), $request);
+            return $this->formatData(true, $request);
         } catch (Exception $exception) {
             throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? Response::HTTP_BAD_REQUEST);
         }
     }
 
-    private function formatData($usersQuery, Request $request, ?bool $working = false): LengthAwarePaginator
+    private function formatData(bool $useractive, Request $request, ?bool $working = false): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
-        $users = app(Pipeline::class)
-            ->send($usersQuery)
-            ->through([
-                UserSearchBy::class,
-                UserSortBy::class,
-            ])->thenReturn();
-        $usersIds = $users->pluck('id')->toArray();
-        $employees = Employee::whereHas('user', function ($query) use ($usersIds) {
-            $query->whereIn('id', $usersIds);
+
+        $employees = Employee::whereHas('user', function ($query) use ($useractive) {
+            $query->where('active', $useractive);
         })->with('user');
         $employees = app(Pipeline::class)
             ->send($employees)
@@ -84,7 +78,7 @@ class EmployeesRepository implements IEmployeesRepository
     final public function getAllNotActiveEmployees(Request $request): LengthAwarePaginator
     {
         try {
-            return $this->formatData(User::where('active', false), $request);
+            return $this->formatData(false, $request);
         } catch (Exception $exception) {
             throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? Response::HTTP_BAD_REQUEST);
         }
@@ -94,7 +88,7 @@ class EmployeesRepository implements IEmployeesRepository
     final public function getAllWorkingEmployees(Request $request): LengthAwarePaginator
     {
         try {
-            return $this->formatData(User::where('active', true), $request, true);
+            return $this->formatData(true, $request, true);
         } catch (Exception $exception) {
             throw EmployeesControllerException::getEmployeesListError($exception->getCode());
         }

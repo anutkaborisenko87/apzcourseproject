@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Http\Resources\RoleResource;
-use App\Interfaces\ServicesInterfaces\IRolesService;
+use App\Interfaces\ServicesInterfaces\RolesServiceInterface;
 use App\Repositories\RoleRepository;
 
-class RolesService implements IRolesService
+class RolesService implements RolesServiceInterface
 {
     private $roleRepository;
 

@@ -2,7 +2,7 @@
 
 namespace App\Interfaces\ServicesInterfaces;
 
-interface IRolesService
+interface RolesServiceInterface
 {
     public function getRolesList(): array;
 }

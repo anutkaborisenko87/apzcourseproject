@@ -20,7 +20,7 @@ abstract class UsersFilter
 
     abstract public function applyFilter($builder, $request);
 
-    protected function filterName()
+    protected function filterName(): string
     {
         return Str::snake(class_basename($this));
     }

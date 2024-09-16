@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ParrentsRequests\CreateParrentRequest;
 use App\Http\Requests\Api\ParrentsRequests\UpdateParrentRequest;
-use App\Interfaces\ServicesInterfaces\IParrentsService;
+use App\Interfaces\ServicesInterfaces\ParrentsServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ParrentsController extends Controller
 {
-    private IParrentsService $parrentsService;
+    private ParrentsServiceInterface $parrentsService;
 
-    public function __construct(IParrentsService $parrentsService)
+    public function __construct(ParrentsServiceInterface $parrentsService)
     {
         $this->parrentsService = $parrentsService;
     }

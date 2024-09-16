@@ -4,14 +4,14 @@ namespace App\Services;
 
 use App\Http\Resources\GroupFullInfoResource;
 use App\Http\Resources\GroupResource;
-use App\Interfaces\ServicesInterfaces\IGroupService;
-use App\Repositories\GroupRepository;
+use App\Interfaces\ServicesInterfaces\GroupServiceInterface;
+use App\Interfaces\RepsitotiesInterfaces\GroupRepositoryInterface;
 
-class GroupService implements IGroupService
+class GroupService implements GroupServiceInterface
 {
-    private $groupRepository;
+    private GroupRepositoryInterface $groupRepository;
 
-    public function __construct(GroupRepository $groupRepository)
+    public function __construct(GroupRepositoryInterface $groupRepository)
     {
         $this->groupRepository = $groupRepository;
     }

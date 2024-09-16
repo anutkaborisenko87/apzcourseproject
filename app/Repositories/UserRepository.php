@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Exceptions\UsersControllerException;
-use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
+use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
 use App\Models\User;
 use App\QueryFilters\UserSearchBy;
 use App\QueryFilters\UserSortBy;
@@ -15,7 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Auth;
 
-class UserRepository implements IUserRepository
+class UserRepository implements UserRepositoryInterface
 {
     private $user;
 

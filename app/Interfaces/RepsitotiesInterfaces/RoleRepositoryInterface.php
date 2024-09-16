@@ -4,7 +4,7 @@ namespace App\Interfaces\RepsitotiesInterfaces;
 
 use Illuminate\Database\Eloquent\Collection;
 
-interface IRoleRepository
+interface RoleRepositoryInterface
 {
     public function getRoles(): Collection;
 }

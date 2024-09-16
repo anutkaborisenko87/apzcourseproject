@@ -2,23 +2,21 @@
 
 namespace App\Services;
 
-use App\Exceptions\EmployeesControllerException;
-use App\Exceptions\UsersControllerException;
 use App\Http\Resources\EmployeeResource;
 use App\Http\Resources\TeachersForSelectResource;
-use App\Interfaces\RepsitotiesInterfaces\IEmployeesRepository;
-use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
-use App\Interfaces\ServicesInterfaces\IEmployeesService;
+use App\Interfaces\RepsitotiesInterfaces\EmployeesRepositoryInterface;
+use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
+use App\Interfaces\ServicesInterfaces\EmployeesServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Permission\Models\Role;
 
-class EmployeesService implements IEmployeesService
+class EmployeesService implements EmployeesServiceInterface
 {
-    private IEmployeesRepository $teacherRepository;
-    private IUserRepository $userRepository;
+    private EmployeesRepositoryInterface $teacherRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(IEmployeesRepository $teacherRepository, IUserRepository $userRepository)
+    public function __construct(EmployeesRepositoryInterface $teacherRepository, UserRepositoryInterface $userRepository)
     {
         $this->teacherRepository = $teacherRepository;
         $this->userRepository = $userRepository;

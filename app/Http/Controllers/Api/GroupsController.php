@@ -6,14 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\GroupsRequests\CreateGroupRequest;
 use App\Http\Requests\Api\GroupsRequests\ShowGroupInfoRequest;
 use App\Http\Requests\Api\GroupsRequests\UpdateGroupRequest;
-use App\Interfaces\ServicesInterfaces\IGroupService;
+use App\Interfaces\ServicesInterfaces\GroupServiceInterface;
 use Illuminate\Http\Response;
 
 class GroupsController extends Controller
 {
-    private IGroupService $groupService;
+    private GroupServiceInterface $groupService;
 
-    public function __construct(IGroupService $groupService)
+    public function __construct(GroupServiceInterface $groupService)
     {
         $this->groupService = $groupService;
     }

@@ -5,7 +5,7 @@ namespace App\Interfaces\RepsitotiesInterfaces;
 use App\Models\Group;
 use Illuminate\Database\Eloquent\Collection;
 
-interface IGroupRepository
+interface GroupRepositoryInterface
 {
     public function getGroupsForSelect(): Collection;
     public function getGroupsList(): Collection;

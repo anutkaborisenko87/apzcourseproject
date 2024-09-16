@@ -3,19 +3,19 @@
 namespace App\Services;
 
 use App\Http\Resources\UserResource;
-use App\Interfaces\RepsitotiesInterfaces\IUserRepository;
-use App\Interfaces\ServicesInterfaces\IUserService;
+use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
+use App\Interfaces\ServicesInterfaces\UserServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
-class UserService implements IUserService
+class UserService implements UserServiceInterface
 {
-    private IUserRepository $userRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(IUserRepository $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->userRepository = $userRepository;
     }
