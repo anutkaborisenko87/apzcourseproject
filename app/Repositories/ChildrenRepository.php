@@ -105,18 +105,9 @@ class ChildrenRepository implements ChildrenRepositoryInterface
     private function formatData($childrenQuery, Request $request): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
-        $users = app(Pipeline::class)
-            ->send(User::query())
-            ->through([
-                UserSearchBy::class,
-                UserSortBy::class,
-            ])->thenReturn();
-        $usersIds = $users->pluck('id')->toArray();
-        $childrenList = $childrenQuery->whereHas('user', function ($query) use ($usersIds) {
-            $query->whereIn('user_id', $usersIds);
-        });
+
         $childrenList = app(Pipeline::class)
-            ->send($childrenList)
+            ->send($childrenQuery->with('user'))
             ->through([
                 ChildSearchBy::class,
                 ChildSortBy::class

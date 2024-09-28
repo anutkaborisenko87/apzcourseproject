@@ -38,6 +38,9 @@ class ChildrenResource extends JsonResource
                 ];
             });
         }
+        if (isset ($this->founded)) {
+            $data['founded'] = $this->founded;
+        }
 
         return array_merge($userData, $data);
     }

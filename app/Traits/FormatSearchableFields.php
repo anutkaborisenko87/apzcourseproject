@@ -48,7 +48,7 @@ trait FormatSearchableFields
             return $builder->whereRaw('1 = 0');
         }  else if ($field === 'group') {
             $selectRaw = "*, (CASE WHEN groups.title  LIKE '%$searchTerm%' THEN TRUE ELSE FALSE END) AS `founded`";
-            return $builder->leftJoin('users', $relationalTable . '.user_id', '=', 'users.id')
+            $builder->leftJoin('users', $relationalTable . '.user_id', '=', 'users.id')
                 ->leftJoin('groups', $relationalTable . '.group_id', '=', 'groups.id')
                 ->selectRaw($selectRaw);
         } else {
