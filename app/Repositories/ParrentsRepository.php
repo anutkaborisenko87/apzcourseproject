@@ -23,32 +23,24 @@ class ParrentsRepository implements ParrentsRepositoryInterface
     final public function getActiveParrents(Request $request): LengthAwarePaginator
     {
         try {
-            return $this->formatParrentsData(User::where('active', true), $request);
+            return $this->formatParrentsData (true, $request);
         } catch (Exception $exception) {
-            throw ParrentControllerException::getActiveParrentsError($exception->getCode());
+            throw ParrentControllerException::getActiveParrentsError($exception->getCode() === 0 ? 500 : $exception->getCode());
         }
     }
 
-    private function formatParrentsData($usersQuery, Request $request): LengthAwarePaginator
+    private function formatParrentsData(bool $useractive, Request $request): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
-        $users = app(Pipeline::class)
-            ->send($usersQuery)
-            ->through([
-                UserSearchBy::class,
-                UserSortBy::class,
-            ])->thenReturn();
-        $usersIds = $users->pluck('id')->toArray();
-        $parrents = Parrent::whereHas('user', function ($query) use ($usersIds) {
-            $query->whereIn('id', $usersIds);
-        });
+        $parrents = Parrent::whereHas('user', function ($query) use ($useractive) {
+            $query->where('active', $useractive);
+        })->with('user')->with('children_relations');
         $parrents = app(Pipeline::class)
             ->send($parrents)
             ->through([
                 ParrentSearchBy::class,
                 ParrentSortBy::class
             ])->thenReturn();
-        $parrents = $parrents->with('children_relations')->with('user');
 
         if ($perPage !== 'all') {
             $parrents = $parrents->paginate((int)$perPage);
@@ -65,7 +57,7 @@ class ParrentsRepository implements ParrentsRepositoryInterface
                 $query->where('active', true);
             })->get();
         } catch (Exception $exception) {
-            throw ParrentControllerException::getActiveParrentsForSelectError($exception->getCode());
+            throw ParrentControllerException::getActiveParrentsForSelectError($exception->getCode() === 0 ? 500 : $exception->getCode());
         }
     }
 
@@ -78,16 +70,16 @@ class ParrentsRepository implements ParrentsRepositoryInterface
                 $query->where('child_id', $childId);
             })->get();
         } catch (Exception $exception) {
-            throw ParrentControllerException::getActiveParrentsForSelectError($exception->getCode());
+            throw ParrentControllerException::getActiveParrentsForSelectError($exception->getCode() === 0 ? 500 : $exception->getCode());
         }
     }
 
     final public function getNotActiveParrents(Request $request): LengthAwarePaginator
     {
         try {
-            return  $this->formatParrentsData(User::where('active', false), $request);
+            return  $this->formatParrentsData( false, $request);
         } catch (Exception $exception) {
-            throw ParrentControllerException::getNotActiveParrentsError($exception->getCode());
+            throw ParrentControllerException::getNotActiveParrentsError($exception->getCode() === 0 ? 500 : $exception->getCode());
         }
     }
 
@@ -123,7 +115,7 @@ class ParrentsRepository implements ParrentsRepositoryInterface
             }
             return $newParrent;
         } catch (Exception $exception) {
-            throw ParrentControllerException::createParrentError($exception->getCode());
+            throw ParrentControllerException::createParrentError($exception->getCode() === 0 ? 500 : $exception->getCode());
         }
     }
 
@@ -142,7 +134,7 @@ class ParrentsRepository implements ParrentsRepositoryInterface
             if (!$parrent->update($data)) throw ParrentControllerException::updateParrentError(Response::HTTP_BAD_REQUEST);
             return $parrent;
         } catch (Exception $exception) {
-            throw ParrentControllerException::updateParrentError($exception->getCode());
+            throw ParrentControllerException::updateParrentError($exception->getCode() === 0 ? 500 : $exception->getCode());
         }
     }
 

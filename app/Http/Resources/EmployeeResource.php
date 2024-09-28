@@ -28,6 +28,9 @@ class EmployeeResource extends JsonResource
             'employment_date' => !is_null($this->employment_date) ? (new DateTime($this->employment_date))->format("Y-m-d") : null,
             'date_dismissal' => !is_null($this->date_dismissal) ? (new DateTime($this->date_dismissal))->format("Y-m-d") : null,
         ];
+        if (isset ($this->founded)) {
+            $data['founded'] = $this->founded;
+        }
         return array_merge($userData, $data);
     }
 }

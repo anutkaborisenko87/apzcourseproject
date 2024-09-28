@@ -50,6 +50,9 @@ class UserResource extends JsonResource
         if ($this->roles()->first()) {
             $data['role'] = (new RoleResource($this->roles()->first()))->resolve();
         }
+        if (isset($this->founded)) {
+            $data['founded'] = $this->founded;
+        }
         return $data;
     }
 }

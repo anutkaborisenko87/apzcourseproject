@@ -18,36 +18,49 @@ class UserSearchBy extends UsersFilter
         $fields = User::getSearchableFields();
 
         if ($field === 'all') {
-            $builder->where(function ($query) use ($field, $searchTerm, $fields) {
-                array_walk($fields, function ($field) use (&$query, $searchTerm) {
-                    $query->orWhere($field, 'LIKE', "%$searchTerm%");
-                });
-            });
+            $conditions = '';
+            foreach ($fields as $field) {
+                $conditions .= "$field LIKE '%$searchTerm%' OR ";
+            }
+            $conditions = rtrim($conditions, ' OR '); // Remove trailing ' OR'
 
+            $selectRaw = "*, (CASE WHEN $conditions THEN TRUE ELSE FALSE END) AS `founded`";
+
+            $builder->selectRaw($selectRaw);
         } else if ($field === 'user_name') {
             $searchTermsArr = explode(' ', $searchTerm);
             $fieldsForSearch = ['first_name', 'last_name', 'patronymic_name'];
             array_walk($searchTermsArr, function ($searchTerm) use (&$builder, $fieldsForSearch) {
-                $builder->where(function ($query) use ($searchTerm, $fieldsForSearch) {
-                    array_walk($fieldsForSearch, function ($field) use (&$query, $searchTerm) {
-                        $query->orWhere($field, 'LIKE', "%$searchTerm%");
-                    });
-                });
+                $conditions = '';
+                foreach ($fieldsForSearch as $field) {
+                    $conditions .= "$field LIKE '%$searchTerm%' OR ";
+                }
+                $conditions = rtrim($conditions, ' OR '); // Remove trailing ' OR'
+
+                $selectRaw = "*, (CASE WHEN $conditions THEN TRUE ELSE FALSE END) AS `founded`";
+
+                $builder->selectRaw($selectRaw);
+
             });
-        }  else if ($field === 'address') {
+        } else if ($field === 'address') {
             $searchTermsArr = explode(' ', $searchTerm);
             $fieldsForSearch = ['city', 'street', 'house_number', 'apartment_number'];
             array_walk($searchTermsArr, function ($searchTerm) use (&$builder, $fieldsForSearch) {
-                $builder->where(function ($query) use ($searchTerm, $fieldsForSearch) {
-                    array_walk($fieldsForSearch, function ($field) use (&$query, $searchTerm) {
-                        $query->orWhere($field, 'LIKE', "%$searchTerm%");
-                    });
-                });
+                $conditions = '';
+                foreach ($fieldsForSearch as $field) {
+                    $conditions .= "$field LIKE '%$searchTerm%' OR ";
+                }
+                $conditions = rtrim($conditions, ' OR '); // Remove trailing ' OR'
+
+                $selectRaw = "*, (CASE WHEN $conditions THEN TRUE ELSE FALSE END) AS `founded`";
+
+                $builder->selectRaw($selectRaw);
             });
         }  else if (!in_array($field, $fields)) {
             return $builder->whereRaw('1 = 0');
         } else {
-            $builder->where($field, 'LIKE', "%$searchTerm%");
+            $selectRaw = "*, (CASE WHEN $field  LIKE '%$searchTerm%' THEN TRUE ELSE FALSE END) AS `founded`";
+            $builder->selectRaw($selectRaw);
         }
         return $builder;
     }

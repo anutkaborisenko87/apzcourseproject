@@ -16,8 +16,7 @@ class ParrentSearchBy extends UsersFilter
         if ($searchTerm === '') {
             return $builder;
         }
-        $fields = Parrent::getSearchableFields();
 
-        return $this->formatFilter($builder, $field, $fields, $searchTerm);
+        return $this->formatFilter($builder, $field, Parrent::class, $searchTerm);
     }
 }

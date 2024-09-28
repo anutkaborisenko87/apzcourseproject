@@ -49,11 +49,13 @@ class UserRepository implements UserRepositoryInterface
             ])->thenReturn();
 
 
+
         if ($perPage !== 'all') {
             $users = $users->paginate((int) $perPage);
         } else {
             $users = $users->paginate($users->count());
         }
+
         return $users;
     }
 

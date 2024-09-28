@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ChildrenRequests\CreateChildRequest;
 use App\Http\Requests\Api\ChildrenRequests\UpdateChildRequest;
-use App\Interfaces\ServicesInterfaces\IChildrenService;
+use App\Interfaces\ServicesInterfaces\ChildrenServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ChildrenController extends Controller
 {
-    private IChildrenService $childrenService;
+    private ChildrenServiceInterface $childrenService;
 
-    public function __construct(IChildrenService $childrenService)
+    public function __construct(ChildrenServiceInterface $childrenService)
     {
         $this->childrenService = $childrenService;
     }
