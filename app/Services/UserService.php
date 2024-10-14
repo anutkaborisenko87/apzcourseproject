@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Resources\UserResource;
 use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
 use App\Interfaces\ServicesInterfaces\UserServiceInterface;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -28,20 +29,75 @@ class UserService implements UserServiceInterface
     final public function getAllActiveUsers(Request $request): array
     {
         $users = $this->userRepository->getAllActiveUsers($request);
-        return $this->formatRespData($users, $request);
+        return $this->formatRespData($users, $request, true);
     }
 
     final public function getAllNotActiveUsers(Request $request): array
     {
         $users = $this->userRepository->getAllNotActiveUsers($request);
-        return $this->formatRespData($users, $request);
+        return $this->formatRespData($users, $request, false);
     }
 
-    private function formatRespData(LengthAwarePaginator $usersPaginated, Request $request): array
+    private function formatRespData(LengthAwarePaginator $usersPaginated, Request $request, bool $active): array
     {
         $usersResp = $usersPaginated->toArray();
         $usersResp['data'] = UserResource::collection($usersPaginated->getCollection())->resolve();
         $requestData = $request->except(['page', 'per_page']);
+        $birthYears = ($this->userRepository->getBirthYearsUsers($active))->toArray();
+        $requestedYearFilters = isset($request->input('filter_users_by')['birth_year']) ? $request->input('filter_users_by')['birth_year'] : [];
+        $yearsFilterOption = [];
+        if(!empty($birthYears)) {
+            array_walk($birthYears, function ($year) use (&$yearsFilterOption, $requestedYearFilters) {
+                $replacedYear = $year ?? "null";
+                $yearsFilterOption[] = [
+                    'value' => "$replacedYear",
+                    'label' => is_null($year) ? "невідомо" : "$year",
+                    'checked' => in_array("$replacedYear", $requestedYearFilters)
+                ];
+            });
+        }
+        $requestData['filters'][] = [
+            'id' => 'category',
+            'name' => 'Категорія',
+            'options' => [
+                [
+                    'value' => 'parents',
+                    'label' => 'батьки',
+                    'checked' => $request->has('filter_users_by')
+                        && in_array('category', array_keys($request->input('filter_users_by')))
+                        && in_array('parents', $request->input('filter_users_by')['category'])
+                ],
+                [
+                    'value' => 'children',
+                    'label' => 'діти',
+                    'checked' => $request->has('filter_users_by')
+                        && in_array('category', array_keys($request->input('filter_users_by')))
+                        && in_array('children', $request->input('filter_users_by')['category'])
+                ],
+                [
+                    'value' => 'employees',
+                    'label' => 'співробітники',
+                    'checked' => $request->has('filter_users_by')
+                        && in_array('category', array_keys($request->input('filter_users_by')))
+                        && in_array('employees', $request->input('filter_users_by')['category'])
+                ],
+                [
+                    'value' => 'users',
+                    'label' => 'адмін. персонал',
+                    'checked' => $request->has('filter_users_by')
+                        && in_array('category', array_keys($request->input('filter_users_by')))
+                        && in_array('users', $request->input('filter_users_by')['category'])
+                ],
+            ]
+        ];
+        if (!empty($yearsFilterOption)) {
+            $requestData['filters'][] = [
+                'id' => 'birth_year',
+                'name' => 'Рік народження',
+                'options' => $yearsFilterOption
+            ];
+        }
+
         return array_merge($usersResp, $requestData);
     }
 
@@ -78,6 +134,7 @@ class UserService implements UserServiceInterface
     final public function updateUser(int $userId, array $data): array
     {
         $user = $this->userRepository->getUserById($userId);
+        $userData = $data;
         if (isset($userData['role'])) {
             $roleId = $userData['role'];
             unset($userData['role']);
@@ -94,7 +151,15 @@ class UserService implements UserServiceInterface
                 }
             }
         }
-        return (new UserResource($this->userRepository->updateUser($user, $data)))->resolve();
+        if (isset($userData['birth_date'])) {
+            $dateObject = new DateTime($userData['birth_date']);
+            $userData['birth_date'] = $dateObject->format('Y-m-d');
+            $userData['birth_year'] = $dateObject->format('Y');
+        }
+        if (isset($userData['email'])) {
+            $userData['password'] = Hash::make($userData['email']);
+        }
+        return (new UserResource($this->userRepository->updateUser($user, $userData)))->resolve();
     }
 
     final public function deactivateUser(int $userId): array

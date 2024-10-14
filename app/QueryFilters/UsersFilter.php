@@ -3,6 +3,7 @@
 namespace App\QueryFilters;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 abstract class UsersFilter
@@ -18,7 +19,7 @@ abstract class UsersFilter
 
     }
 
-    abstract public function applyFilter($builder, $request);
+    abstract public function applyFilter($builder, $request): Builder;
 
     protected function filterName(): string
     {

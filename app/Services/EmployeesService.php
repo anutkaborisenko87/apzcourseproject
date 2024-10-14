@@ -7,6 +7,7 @@ use App\Http\Resources\TeachersForSelectResource;
 use App\Interfaces\RepsitotiesInterfaces\EmployeesRepositoryInterface;
 use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
 use App\Interfaces\ServicesInterfaces\EmployeesServiceInterface;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Permission\Models\Role;
@@ -25,13 +26,50 @@ class EmployeesService implements EmployeesServiceInterface
     final public function getActiveEmployeesList(Request $request): array
     {
         $employees = $this->teacherRepository->getAllActiveEmployees($request);
-        return $this->formatRespData($employees, $request);
+        return $this->formatRespData($employees, $request, true);
     }
-    private function formatRespData(LengthAwarePaginator $employeesPaginated, Request $request): array
+
+    private function formatRespData(LengthAwarePaginator $employeesPaginated, Request $request, bool $active): array
     {
         $employeesResp = $employeesPaginated->toArray();
         $employeesResp['data'] = EmployeeResource::collection($employeesPaginated->getCollection())->resolve();
         $requestData = $request->except(['page', 'per_page']);
+        $requestData['filters'][] = [
+            'id' => 'sex',
+            'name' => 'Гендерна приналежність',
+            'options' => [
+                [
+                    'value' => 'male',
+                    'label' => 'чоловік',
+                    'checked' => $request->has('filter_employees_by')
+                        && in_array('sex', array_keys($request->input('filter_employees_by')))
+                        && in_array('male', $request->input('filter_employees_by')['sex'])
+                ],
+                [
+                    'value' => 'female',
+                    'label' => 'жінка',
+                    'checked' => $request->has('filter_employees_by')
+                        && in_array('sex', array_keys($request->input('filter_employees_by')))
+                        && in_array('female', $request->input('filter_employees_by')['sex'])
+                ]
+            ]
+        ];
+        $citiesList = User::where('active', $active)->whereHas('employee')->citiesList()->toArray();
+        $citiesList = array_map(function ($city) use ($request) {
+            $cityString = $city ?? 'null';
+            return [
+                'value' => $cityString,
+                'label' => $city ?? 'Невідомо',
+                'checked' => $request->has('filter_employees_by')
+                    && in_array('city', array_keys($request->input('filter_employees_by')))
+                    && in_array($cityString, $request->input('filter_employees_by')['city'])
+            ];
+        }, $citiesList);
+        $requestData['filters'][] = [
+            'id' => 'city',
+            'name' => 'Місто',
+            'options' => $citiesList
+        ];
         return array_merge($employeesResp, $requestData);
     }
 
@@ -44,13 +82,13 @@ class EmployeesService implements EmployeesServiceInterface
     final public function getNotActiveEmployeesList(Request $request): array
     {
         $employees = $this->teacherRepository->getAllNotActiveEmployees($request);
-        return $this->formatRespData($employees, $request);
+        return $this->formatRespData($employees, $request, false);
     }
 
     final public function getWorkingEmployeesList(Request $request): array
     {
         $employees = $this->teacherRepository->getAllWorkingEmployees($request);
-        return $this->formatRespData($employees, $request);
+        return $this->formatRespData($employees, $request, true);
     }
 
     final public function createEmployee(array $data): array
@@ -77,7 +115,7 @@ class EmployeesService implements EmployeesServiceInterface
     {
         $teacher = $this->teacherRepository->getEmployeeById($id);
         if (isset($data['user'])) {
-           $this->userRepository->updateUser($teacher->user, $data['user']);
+            $this->userRepository->updateUser($teacher->user, $data['user']);
         }
         $updatedEmployee = $this->teacherRepository->updateEmployee($teacher, $data['employee']);
         return (new EmployeeResource($updatedEmployee))->resolve();

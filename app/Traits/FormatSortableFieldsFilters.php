@@ -15,14 +15,17 @@ trait FormatSortableFieldsFilters
         $userSortableFields = User::getSortableFields();
         $relationalSortableFields = $modelClass::getSortableFields();
         $relationalTable = (new $modelClass())->getTable();
+        $sql = $builder->toSql();
+        if (strpos($sql, "left join `users` on `{$relationalTable}`.`user_id` = `users`.`id`") === false) {
+            $builder->leftJoin('users', $relationalTable . '.user_id', '=', 'users.id');
+        }
         if (!in_array($field, $userSortableFields) && !in_array($field, $relationalSortableFields)) {
             $field = 'id';
         }
         if (in_array($field, $relationalSortableFields)) {
             $builder->orderBy($field, $direction);
         } else {
-            $builder->leftJoin('users', $relationalTable . '.user_id', '=', 'users.id')
-                ->orderBy('users.' . $field, $direction);
+            $builder->orderBy('users.' . $field, $direction);
         }
         return $builder;
     }

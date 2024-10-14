@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Exceptions\UsersControllerException;
 use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
 use App\Models\User;
+use App\QueryFilters\FilterUsersBy;
 use App\QueryFilters\UserSearchBy;
 use App\QueryFilters\UserSortBy;
 use Exception;
@@ -14,6 +15,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -26,8 +28,7 @@ class UserRepository implements UserRepositoryInterface
 
     final public function profile(): ?User
     {
-        $user = $this->user;
-        return $user;
+        return $this->user;
     }
 
     final public function getAllActiveUsers(Request $request): LengthAwarePaginator
@@ -44,12 +45,10 @@ class UserRepository implements UserRepositoryInterface
         $users = app(Pipeline::class)
             ->send($builder)
             ->through([
+                FilterUsersBy::class,
                 UserSearchBy::class,
                 UserSortBy::class
             ])->thenReturn();
-
-
-
         if ($perPage !== 'all') {
             $users = $users->paginate((int) $perPage);
         } else {
@@ -64,6 +63,14 @@ class UserRepository implements UserRepositoryInterface
         return $this->getFilteredData(User::where('id', '<>', $this->user->id)->where('active', false), $request);
     }
 
+    final public function getBirthYearsUsers(bool $activeUser): Collection
+    {
+        return User::where('id', '<>', $this->user->id)->where('active', $activeUser)->distinct()->pluck('birth_year');
+    }
+
+    /**
+     * @throws UsersControllerException
+     */
     final public function getUserById(int $id): User
     {
         try {
@@ -75,6 +82,9 @@ class UserRepository implements UserRepositoryInterface
         }
     }
 
+    /**
+     * @throws UsersControllerException
+     */
     final public function createUser(array $userData): User
     {
         try {
@@ -84,6 +94,9 @@ class UserRepository implements UserRepositoryInterface
         }
     }
 
+    /**
+     * @throws UsersControllerException
+     */
     final public function updateUser(User $user, array $data): User
     {
         try {
@@ -93,6 +106,10 @@ class UserRepository implements UserRepositoryInterface
             throw UsersControllerException::updateUserError($exception->getCode());
         }
     }
+
+    /**
+     * @throws UsersControllerException
+     */
     final public function deactivateUser(User $user): User
     {
         try {
@@ -111,6 +128,10 @@ class UserRepository implements UserRepositoryInterface
             throw UsersControllerException::updateUserError($exception->getCode());
         }
     }
+
+    /**
+     * @throws UsersControllerException
+     */
     final public function deleteUser(User $user): bool
     {
         try {

@@ -3,11 +3,12 @@
 namespace App\QueryFilters;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserSearchBy extends UsersFilter
 {
 
-    public function applyFilter($builder, $request)
+    public function applyFilter($builder, $request): Builder
     {
         $field = $request->input($this->filterName(), 'all');
 

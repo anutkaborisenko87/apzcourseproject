@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -87,6 +88,11 @@ class User extends Authenticatable implements SearchableInterface
     final public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'user_id', 'id');
+    }
+
+    public function scopeCitiesList($query): Collection
+    {
+        return $query->distinct()->pluck('city');
     }
 
     public static function getSearchableFields(): array

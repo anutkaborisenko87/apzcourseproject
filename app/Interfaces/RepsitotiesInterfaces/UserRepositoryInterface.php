@@ -5,12 +5,14 @@ namespace App\Interfaces\RepsitotiesInterfaces;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 interface UserRepositoryInterface
 {
     public function profile(): ?User;
     public function getAllActiveUsers(Request $request): LengthAwarePaginator;
     public function getAllNotActiveUsers(Request $request): LengthAwarePaginator;
+    public function getBirthYearsUsers(bool $activeUser): Collection;
     public function getUserById(int $id): User;
     public function createUser(array $userData): User;
     public function updateUser(User $user, array $data): User;

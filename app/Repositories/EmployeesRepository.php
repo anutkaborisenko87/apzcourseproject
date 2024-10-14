@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\User;
 use App\QueryFilters\EmployeeSearchBy;
 use App\QueryFilters\EmployeeSortBy;
+use App\QueryFilters\FilterEmployeesBy;
 use App\QueryFilters\UserSearchBy;
 use App\QueryFilters\UserSortBy;
 use Exception;
@@ -20,12 +21,15 @@ use Illuminate\Pipeline\Pipeline;
 class EmployeesRepository implements EmployeesRepositoryInterface
 {
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function getAllActiveEmployees(Request $request): LengthAwarePaginator
     {
         try {
             return $this->formatData(true, $request);
         } catch (Exception $exception) {
-            throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? Response::HTTP_BAD_REQUEST);
+            throw EmployeesControllerException::getEmployeesListError(Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -40,13 +44,13 @@ class EmployeesRepository implements EmployeesRepositoryInterface
             ->send($employees)
             ->through([
                 EmployeeSortBy::class,
-                EmployeeSearchBy::class
+                EmployeeSearchBy::class,
+                FilterEmployeesBy::class
             ])
             ->thenReturn();
         if ($working) {
             $employees = $employees ->whereNotNull('employment_date')->whereNull('date_dismissal');
         }
-
         if ($perPage !== 'all') {
             $employees =  $employees->paginate((int) $perPage);
         } else {
@@ -55,6 +59,9 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         return $employees;
     }
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function getActiveTeachersForGroup(): Collection
     {
         try {
@@ -75,6 +82,9 @@ class EmployeesRepository implements EmployeesRepositoryInterface
 
     }
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function getAllNotActiveEmployees(Request $request): LengthAwarePaginator
     {
         try {
@@ -85,6 +95,9 @@ class EmployeesRepository implements EmployeesRepositoryInterface
 
     }
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function getAllWorkingEmployees(Request $request): LengthAwarePaginator
     {
         try {
@@ -105,6 +118,9 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         }
     }
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function createEmployee(array $data, User $user): Employee
     {
         try {
@@ -119,6 +135,9 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         }
     }
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function updateEmployee(Employee $employee, array $data): Employee
     {
         try {
@@ -129,6 +148,9 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         }
     }
 
+    /**
+     * @throws EmployeesControllerException
+     */
     final public function deleteEmployee(Employee $employee): bool
     {
         try {
