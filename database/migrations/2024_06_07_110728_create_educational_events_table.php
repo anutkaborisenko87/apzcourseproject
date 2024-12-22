@@ -21,7 +21,6 @@ class CreateEducationalEventsTable extends Migration
             $table->text('developed_skills')->nullable();
             $table->text('event_description')->nullable();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->foreignId('educational_program_id')->constrained('educational_programs')->onDelete('cascade');
             $table->timestamps();
         });
         Schema::create('edu_ev_child', function (Blueprint $table) {
