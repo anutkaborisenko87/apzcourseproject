@@ -23,8 +23,8 @@ class CreateQualifyingEventsTable extends Migration
         });
         Schema::create('emp_qualif_evs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('qualif_ev_id')->unique()->constrained('qualifying_events')->onDelete('cascade');
-            $table->foreignId('employee_id')->unique()->constrained('employees')->onDelete('cascade');
+            $table->foreignId('qualif_ev_id')->constrained('qualifying_events')->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
         });
     }
 
