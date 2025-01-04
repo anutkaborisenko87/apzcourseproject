@@ -13,7 +13,10 @@ use Illuminate\Http\Response;
 class GroupRepository implements GroupRepositoryInterface
 {
     /**
-     * @throws GroupsControllerException
+     * Retrieves all groups for populating a selection list.
+     *
+     * @return Collection Collection of groups.
+     * @throws GroupsControllerException If an error occurs while fetching the group list.
      */
     final public function getGroupsForSelect(): Collection
     {
@@ -25,7 +28,14 @@ class GroupRepository implements GroupRepositoryInterface
     }
 
     /**
-     * @throws GroupsControllerException
+     * Retrieves a list of groups with counts of enrolled children and assigned teachers.
+     *
+     * Children are counted if their enrollment date is on or before today and graduation
+     * date has not passed or is not set. Teachers are counted if they are associated with
+     * groups for the current date range.
+     *
+     * @return Collection Collection of groups with related counts.
+     * @throws GroupsControllerException If an error occurs while fetching the group list.
      */
     final public function getGroupsList(): Collection
     {
@@ -47,24 +57,19 @@ class GroupRepository implements GroupRepositoryInterface
                                     ->orWhereNull('date_finish');
                             });
                     });
-                },
-                'educationalPrograms' => function ($query) use ($today) {
-                    $query->whereHas('groups', function($q) use ($today) {
-                        $q->where('date_start', '<=', $today)
-                            ->where(function ($q) use ($today) {
-                                $q->where('date_finish', '>=', $today)
-                                    ->orWhereNull('date_finish');
-                            });
-                    });
-                },
+                }
             ])->get();
         } catch (Exception $exception) {
-            throw GroupsControllerException::getGroupsListError($exception->getCode());
+            throw GroupsControllerException::getGroupsListError($exception->getCode() || Response::HTTP_BAD_REQUEST);
         }
     }
 
     /**
-     * @throws GroupsControllerException
+     * Retrieves a group by its unique identifier.
+     *
+     * @param int $groupId The ID of the group to retrieve.
+     * @return Group|null The group instance if found, or null if not found.
+     * @throws GroupsControllerException If an error occurs while fetching the group or the group is not found.
      */
     final public function getGroupById(int $groupId): ?Group
     {
@@ -78,7 +83,19 @@ class GroupRepository implements GroupRepositoryInterface
     }
 
     /**
-     * @throws GroupsControllerException
+     * Retrieves detailed group information by group ID, including optional filtered related data.
+     *
+     * If the optional data parameter is provided, related entities such as children, teachers,
+     * and educational programs are loaded and filtered by the specified date range.
+     *
+     * @param int $groupId The ID of the group to retrieve information for.
+     * @param array|null $data Optional array containing 'from' and 'to' dates for data filtering.
+     *                          - 'from': The start date for filtering (inclusive).
+     *                          - 'to': The end date for filtering (inclusive; defaults to the current date if not provided).
+     *
+     * @return Group|null The group with its related data, or null if not found.
+     *
+     * @throws GroupsControllerException If an error occurs while retrieving the group or its related data.
      */
     final public function getGroupInfo(int $groupId, ?array $data = null): ?Group
     {
@@ -109,7 +126,15 @@ class GroupRepository implements GroupRepositoryInterface
     }
 
     /**
-     * @throws GroupsControllerException
+     * Creates a new group and associates related entities such as children, teachers,
+     * and educational programs based on the provided data.
+     *
+     * @param array $data Reference to an associative array containing group details
+     *                    along with optional related entities like children, teachers,
+     *                    and educational programs.
+     * @return Group The newly created group instance with its relationships loaded.
+     * @throws GroupsControllerException If an error occurs during group creation or
+     *                                   association with related entities.
      */
     final public function addGroup(array &$data): Group
     {
@@ -157,7 +182,16 @@ class GroupRepository implements GroupRepositoryInterface
     }
 
     /**
-     * @throws GroupsControllerException
+     * Updates the group with the provided data, including related entities like children, teachers,
+     * and educational programs.
+     *
+     * @param Group $group The group to be updated.
+     * @param array &$data Reference to the data array containing group updates, as well as
+     *                     children, teachers, and educational programs details.
+     *
+     * @return Group The updated group with related entities loaded.
+     *
+     * @throws GroupsControllerException If an error occurs during the update operation.
      */
     final public function updateGroup(Group $group, array &$data): Group
     {
@@ -207,7 +241,11 @@ class GroupRepository implements GroupRepositoryInterface
     }
 
     /**
-     * @throws GroupsControllerException
+     * Deletes the specified group.
+     *
+     * @param Group $group The group instance to be deleted.
+     * @return bool True if the group was successfully deleted.
+     * @throws GroupsControllerException If an error occurs during the deletion process.
      */
     final public function deleteGroup(Group $group): bool
     {

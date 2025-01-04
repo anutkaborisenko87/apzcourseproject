@@ -50,22 +50,7 @@ class GroupFullInfoResource extends JsonResource
             });
             $data['teachers'] = $teachers;
         }
-        if (isset($data['educationalPrograms']) && !is_numeric($data['teachers'])) {
-            $educationalPrograms = [];
-            $this->educationalPrograms->each(function ($item) use (&$educationalPrograms) {
-               $educationalPrograms[] = [
-                   'program_id' => $item->id,
-                   'program_age_restrictions' => $item->age_restrictions,
-                   'program_approval_date' => $item->approval_date,
-                   'program_author_name' => ($item->author->user->last_name ?? '') . ' ' . ($item->author->user->first_name ?? '') . ' ' . ($item->author->user->patronymic_name ?? ''),
-                   'program_teaching_period' => [
-                       'from' => $item->pivot->date_start,
-                       'to' => $item->pivot->date_finish
-                   ]
-               ];
-            });
-            $data['educationalPrograms'] = $educationalPrograms;
-        }
+
         return $data;
     }
 }

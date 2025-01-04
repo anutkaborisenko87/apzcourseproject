@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Exceptions\UsersControllerException;
 use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
 use App\Models\User;
+use App\QueryFilters\DateFilterUsersBy;
 use App\QueryFilters\FilterUsersBy;
 use App\QueryFilters\UserSearchBy;
 use App\QueryFilters\UserSortBy;
@@ -26,11 +27,22 @@ class UserRepository implements UserRepositoryInterface
         $this->user = Auth::guard('api')->user();
     }
 
+    /**
+     * Retrieves the user's profile.
+     *
+     * @return User|null
+     */
     final public function profile(): ?User
     {
         return $this->user;
     }
 
+    /**
+     * Retrieves all active users excluding the currently authenticated user.
+     *
+     * @param Request $request The HTTP request instance containing filtering data.
+     * @return LengthAwarePaginator
+     */
     final public function getAllActiveUsers(Request $request): LengthAwarePaginator
     {
         $users = User::query();
@@ -39,6 +51,14 @@ class UserRepository implements UserRepositoryInterface
         return $this->getFilteredData($users, $request);
     }
 
+    /**
+     * Retrieves filtered and paginated user data based on request parameters.
+     *
+     * @param Builder $builder The query builder instance for filtering and sorting users.
+     * @param Request $request The current HTTP request containing filtering and pagination parameters.
+     *
+     * @return LengthAwarePaginator Paginated and filtered user data.
+     */
     private function getFilteredData(Builder $builder, Request $request): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
@@ -46,6 +66,7 @@ class UserRepository implements UserRepositoryInterface
             ->send($builder)
             ->through([
                 FilterUsersBy::class,
+                DateFilterUsersBy::class,
                 UserSearchBy::class,
                 UserSortBy::class
             ])->thenReturn();
@@ -58,18 +79,47 @@ class UserRepository implements UserRepositoryInterface
         return $users;
     }
 
+    /**
+     * Retrieves all users that are not active, excluding the current logged-in user.
+     *
+     * @param Request $request The HTTP request instance containing query parameters for filtering.
+     * @return LengthAwarePaginator The paginated collection of inactive users.
+     */
     final public function getAllNotActiveUsers(Request $request): LengthAwarePaginator
     {
         return $this->getFilteredData(User::where('id', '<>', $this->user->id)->where('active', false), $request);
     }
 
-    final public function getBirthYearsUsers(bool $activeUser): Collection
+    /**
+     * Retrieves the minimum birthdate of users based on their active status,
+     * excluding the current logged-in user.
+     *
+     * @param bool $activeUser Determines whether to filter users by active or inactive status.
+     * @return string The minimum birthdate of the filtered users.
+     */
+    final public function getMinBirthDateUsers(bool $activeUser): string
     {
-        return User::where('id', '<>', $this->user->id)->where('active', $activeUser)->distinct()->pluck('birth_year');
+        return User::where('id', '<>', $this->user->id)->where('active', $activeUser)->min('birth_date') ?? '';
     }
 
     /**
-     * @throws UsersControllerException
+     * Retrieves the minimum birthdate of users based on their active status,
+     * excluding the current logged-in user.
+     *
+     * @param bool $activeUser Determines whether to filter users by active or inactive status.
+     * @return string The minimum birthdate of the filtered users.
+     */
+    final public function getMaxBirthDateUsers(bool $activeUser): string
+    {
+        return User::where('id', '<>', $this->user->id)->where('active', $activeUser)->max('birth_date') ?? '';
+    }
+
+    /**
+     * Retrieves a user by their unique identifier.
+     *
+     * @param int $id The unique ID of the user to retrieve.
+     * @return User The user instance associated with the provided ID.
+     * @throws UsersControllerException If the user is not found or an exception occurs during retrieval.
      */
     final public function getUserById(int $id): User
     {
@@ -83,7 +133,11 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws UsersControllerException
+     * Creates a new user with the provided data.
+     *
+     * @param array $userData An associative array containing the user data to be created.
+     * @return User The newly created user instance.
+     * @throws UsersControllerException If an error occurs during the user creation process.
      */
     final public function createUser(array $userData): User
     {
@@ -95,7 +149,12 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws UsersControllerException
+     * Updates the specified user with the given data.
+     *
+     * @param User $user The user instance to be updated.
+     * @param array $data The data to update the user with.
+     * @return User The updated user instance.
+     * @throws UsersControllerException If an error occurs while updating the user.
      */
     final public function updateUser(User $user, array $data): User
     {
@@ -108,7 +167,11 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws UsersControllerException
+     * Deactivates a user by setting their active status to false.
+     *
+     * @param User $user The user instance to be deactivated.
+     * @return User The updated user instance after deactivation.
+     * @throws UsersControllerException If an error occurs during the update process.
      */
     final public function deactivateUser(User $user): User
     {
@@ -119,6 +182,14 @@ class UserRepository implements UserRepositoryInterface
             throw UsersControllerException::updateUserError($exception->getCode());
         }
     }
+
+    /**
+     * Reactivates a user by setting their 'active' status to true.
+     *
+     * @param User $user The user instance to be reactivated.
+     * @return User The user instance after reactivation.
+     * @throws UsersControllerException When the update operation fails.
+     */
     final public function reactivateUser(User $user): User
     {
         try {
@@ -130,7 +201,11 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @throws UsersControllerException
+     * Deletes a specified user from the system.
+     *
+     * @param User $user The user instance to be deleted.
+     * @return bool True if the user was successfully deleted.
+     * @throws UsersControllerException If an error occurs during the deletion process.
      */
     final public function deleteUser(User $user): bool
     {

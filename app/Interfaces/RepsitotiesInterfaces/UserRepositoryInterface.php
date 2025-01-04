@@ -12,7 +12,8 @@ interface UserRepositoryInterface
     public function profile(): ?User;
     public function getAllActiveUsers(Request $request): LengthAwarePaginator;
     public function getAllNotActiveUsers(Request $request): LengthAwarePaginator;
-    public function getBirthYearsUsers(bool $activeUser): Collection;
+    public function getMinBirthDateUsers(bool $activeUser): string;
+    public function getMaxBirthDateUsers(bool $activeUser): string;
     public function getUserById(int $id): User;
     public function createUser(array $userData): User;
     public function updateUser(User $user, array $data): User;

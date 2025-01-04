@@ -43,19 +43,22 @@ class UserService implements UserServiceInterface
         $usersResp = $usersPaginated->toArray();
         $usersResp['data'] = UserResource::collection($usersPaginated->getCollection())->resolve();
         $requestData = $request->except(['page', 'per_page']);
-        $birthYears = ($this->userRepository->getBirthYearsUsers($active))->toArray();
-        $requestedYearFilters = isset($request->input('filter_users_by')['birth_year']) ? $request->input('filter_users_by')['birth_year'] : [];
+        $requestedYearFilters = isset($request->input('date_filter_users_by')['birth_date']) ? $request->input('date_filter_users_by')['birth_date'] : [];
         $yearsFilterOption = [];
-        if(!empty($birthYears)) {
-            array_walk($birthYears, function ($year) use (&$yearsFilterOption, $requestedYearFilters) {
-                $replacedYear = $year ?? "null";
-                $yearsFilterOption[] = [
-                    'value' => "$replacedYear",
-                    'label' => is_null($year) ? "невідомо" : "$year",
-                    'checked' => in_array("$replacedYear", $requestedYearFilters)
-                ];
-            });
-        }
+
+        $yearsFilterOption['from'] = [
+            'value' => $requestedYearFilters['from'] ?? null,
+            'label' => "Від дати",
+            'min' => $this->userRepository->getMinBirthDateUsers($active),
+            'max' => $this->userRepository->getMaxBirthDateUsers($active)
+        ];
+        $yearsFilterOption['to'] = [
+            'value' => $requestedYearFilters['to'] ?? null,
+            'label' => "До дати",
+            'min' => $this->userRepository->getMinBirthDateUsers($active),
+            'max' => $this->userRepository->getMaxBirthDateUsers($active)
+        ];
+
         $requestData['filters'][] = [
             'id' => 'category',
             'name' => 'Категорія',
@@ -91,12 +94,12 @@ class UserService implements UserServiceInterface
             ]
         ];
         if (!empty($yearsFilterOption)) {
-            $requestData['filters'][] = [
-                'id' => 'birth_year',
-                'name' => 'Рік народження',
-                'options' => $yearsFilterOption
-            ];
+            $requestData['dateFilters'][] = array_merge([
+                'id' => 'birth_date',
+                'name' => 'Дата народження',
+            ], $yearsFilterOption);
         }
+
 
         return array_merge($usersResp, $requestData);
     }
@@ -131,6 +134,21 @@ class UserService implements UserServiceInterface
         return (new UserResource($user))->resolve();
     }
 
+    /**
+     * Updates the user information based on the provided data.
+     *
+     * This method retrieves a user by their ID and updates their details
+     * including roles, birth date, and email. Handles role assignment and
+     * removal based on the given role ID. Automatically formats the birth
+     * date and generates a hashed password based on the email if specified.
+     *
+     * @param int $userId The ID of the user to be updated.
+     * @param array $data An associative array containing the updated user data.
+     *
+     * @return array The updated user data resolved through the UserResource.
+     *
+     * @throws Exception If a specified role ID does not correspond to a valid role.
+     */
     final public function updateUser(int $userId, array $data): array
     {
         $user = $this->userRepository->getUserById($userId);

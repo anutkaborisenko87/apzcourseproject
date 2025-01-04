@@ -26,8 +26,4 @@ class Group extends Model
         return $this->belongsToMany(Employee::class, 'employees_groups', 'group_id', 'employee_id')->withPivot(['date_start', 'date_finish']);
     }
 
-    final public function educationalPrograms(): BelongsToMany
-    {
-        return $this->belongsToMany(EducationalProgram::class, 'ed_prog_group', 'group_id', 'ed_prog_id')->withPivot(['date_start', 'date_finish']);
-    }
 }

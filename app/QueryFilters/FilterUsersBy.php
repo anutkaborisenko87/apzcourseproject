@@ -13,9 +13,6 @@ class FilterUsersBy extends UsersFilter
         if (isset($filter['category']) && count($filter['category']) > 0) {
             $builder = $this->applyCategoryFilter($builder, $filter['category']);
         }
-        if (isset($filter['birth_year']) && count($filter['birth_year']) > 0) {
-            $builder = $this->applyBirthYearFilter($builder, $filter['birth_year']);
-        }
         return $builder;
     }
 
@@ -44,19 +41,4 @@ class FilterUsersBy extends UsersFilter
         return $builder;
     }
 
-    private function applyBirthYearFilter(&$builder, array $filters)
-    {
-        $builder = $builder->when(count($filters) > 0, function ($query) use ($filters) {
-        return $query->where(function ($query) use ($filters) {
-           array_walk($filters, function ($filter) use (&$query) {
-              if ($filter === "null") {
-                  $query->orWhereNull('birth_year');
-              } else {
-                  $query->orWhere('birth_year', $filter);
-              }
-           });
-        });
-    });
-        return $builder;
-    }
 }

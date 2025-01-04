@@ -12,6 +12,12 @@ use Illuminate\Http\Response;
 class PositionsRepository implements PositionsRepositoryInterface
 {
 
+    /**
+     * Retrieve all positions from the database.
+     *
+     * @return Collection The collection of all positions.
+     * @throws PositionsControllerException If an error occurs while fetching positions.
+     */
     final public function getPositions(): Collection
     {
         try {
@@ -21,6 +27,13 @@ class PositionsRepository implements PositionsRepositoryInterface
         }
     }
 
+    /**
+     * Create a new position using the provided data.
+     *
+     * @param array $data The data used to create a new position.
+     * @return Position The newly created position instance.
+     * @throws PositionsControllerException If the position cannot be created or an error occurs.
+     */
     final public function createPositionInfo(array $data): Position
     {
         try {
@@ -32,6 +45,13 @@ class PositionsRepository implements PositionsRepositoryInterface
         }
     }
 
+    /**
+     * Retrieves position information by its ID.
+     *
+     * @param int $id The ID of the position to retrieve.
+     * @return Position|null Returns the Position object if found, or null if not found.
+     * @throws PositionsControllerException When an error occurs while retrieving the position.
+     */
     final public function getPositionInfo(int $id): ?Position
     {
         try {
@@ -43,6 +63,14 @@ class PositionsRepository implements PositionsRepositoryInterface
         }
     }
 
+    /**
+     * Updates the information of a specified position.
+     *
+     * @param Position $position The position object to be updated.
+     * @param array $data The data to update the position with.
+     * @return Position Returns the updated Position object.
+     * @throws PositionsControllerException When an error occurs during the update process.
+     */
     final public function updatePositionInfo(Position $position, array $data): Position
     {
         try {
@@ -53,6 +81,13 @@ class PositionsRepository implements PositionsRepositoryInterface
         }
     }
 
+    /**
+     * Deletes the provided position information.
+     *
+     * @param Position $position The position instance to be deleted.
+     * @return bool Returns true if the position is successfully deleted.
+     * @throws PositionsControllerException When an error occurs during deletion.
+     */
     final public function deletePositionInfo(Position $position): bool
     {
         try {

@@ -9,30 +9,48 @@ use App\Models\User;
 use App\QueryFilters\EmployeeSearchBy;
 use App\QueryFilters\EmployeeSortBy;
 use App\QueryFilters\FilterEmployeesBy;
-use App\QueryFilters\UserSearchBy;
-use App\QueryFilters\UserSortBy;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class EmployeesRepository implements EmployeesRepositoryInterface
 {
 
     /**
-     * @throws EmployeesControllerException
+     * Retrieves all active employees with pagination.
+     *
+     * @param Request $request The incoming request instance.
+     * @return LengthAwarePaginator Paginated list of active employees.
+     * @throws EmployeesControllerException If an error occurs while retrieving employees.
      */
     final public function getAllActiveEmployees(Request $request): LengthAwarePaginator
     {
         try {
             return $this->formatData(true, $request);
         } catch (Exception $exception) {
-            throw EmployeesControllerException::getEmployeesListError(Response::HTTP_BAD_REQUEST);
+            throw EmployeesControllerException::getEmployeesListError(ResponseAlias::HTTP_BAD_REQUEST);
         }
     }
 
+    /**
+     * Formats and retrieves a paginated list of employees based on the specified criteria.
+     *
+     * The method performs the following steps:
+     * - Filters employees by their user activity status (`useractive`).
+     * - Applies additional query pipelines using `EmployeeSortBy`, `EmployeeSearchBy`, and `FilterEmployeesBy` classes.
+     * - Optionally filters for currently working employees who have an `employment_date` but no `date_dismissal`, based on the `working` parameter.
+     * - Paginates the results using the `per_page` value from the request. If the value is 'all', retrieves all records.
+     *
+     * @param bool $useractive Indicates whether to filter by active or inactive users.
+     * @param Request $request The HTTP request containing additional parameters (e.g., `per_page`).
+     * @param bool|null $working Optional. Defaults to false. Filters for currently working employees if true.
+     *
+     * @return LengthAwarePaginator A paginated collection of employees based on the applied filters and criteria.
+     */
     private function formatData(bool $useractive, Request $request, ?bool $working = false): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
@@ -60,7 +78,19 @@ class EmployeesRepository implements EmployeesRepositoryInterface
     }
 
     /**
-     * @throws EmployeesControllerException
+     * Retrieves a collection of active teachers for a specific group.
+     *
+     * Active teachers are determined based on the following conditions:
+     * - The teacher has an employment date (`employment_date`) and no dismissal date (`date_dismissal`).
+     * - The associated user is active.
+     * - The person holds a position with the title 'teacher'.
+     * - The teacher either does not belong to any groups or belongs to groups where the `date_finish` is earlier than the current date.
+     *
+     * Includes the associated user relationships for eager loading.
+     *
+     * @return Collection A collection of active teachers matching the defined criteria.
+     * @throws EmployeesControllerException If an error occurs while retrieving the list of employees.
+     *
      */
     final public function getActiveTeachersForGroup(): Collection
     {
@@ -77,12 +107,15 @@ class EmployeesRepository implements EmployeesRepositoryInterface
                     $query->where('employees_groups.date_finish', '<', $today);
                 })->with('user')->get();
         } catch (Exception $exception) {
-            throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? Response::HTTP_BAD_REQUEST);
+            throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? ResponseAlias::HTTP_BAD_REQUEST);
         }
 
     }
 
     /**
+     * @param Request $request
+     * @return LengthAwarePaginator
+     *
      * @throws EmployeesControllerException
      */
     final public function getAllNotActiveEmployees(Request $request): LengthAwarePaginator
@@ -90,12 +123,16 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         try {
             return $this->formatData(false, $request);
         } catch (Exception $exception) {
-            throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? Response::HTTP_BAD_REQUEST);
+            throw EmployeesControllerException::getEmployeesListError($exception->getCode() ?? ResponseAlias::HTTP_BAD_REQUEST);
         }
 
     }
 
     /**
+     * Retrieves a paginated list of all currently working employees.
+     *
+     * @param Request $request
+     * @return LengthAwarePaginator
      * @throws EmployeesControllerException
      */
     final public function getAllWorkingEmployees(Request $request): LengthAwarePaginator
@@ -107,6 +144,14 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         }
     }
 
+    /**
+     * Retrieves an employee record by the specified ID.
+     *
+     * @param int $id The unique identifier of the employee.
+     * @return Employee The employee record associated with the given ID.
+     *
+     * @throws EmployeesControllerException If the employee is not found or an error occurs during retrieval.
+     */
     final public function getEmployeeById(int $id): Employee
     {
         try {
@@ -119,6 +164,13 @@ class EmployeesRepository implements EmployeesRepositoryInterface
     }
 
     /**
+     * Create a new employee.
+     *
+     * @param array $data The data required to create the employee.
+     * @param User $user The user associated with the employee.
+     *
+     * @return Employee The newly created employee instance.
+     *
      * @throws EmployeesControllerException
      */
     final public function createEmployee(array $data, User $user): Employee
@@ -136,6 +188,11 @@ class EmployeesRepository implements EmployeesRepositoryInterface
     }
 
     /**
+     * @param Employee $employee The employee instance to be updated.
+     * @param array $data The data for updating the employee.
+     *
+     * @return Employee The updated employee instance.
+     *
      * @throws EmployeesControllerException
      */
     final public function updateEmployee(Employee $employee, array $data): Employee
@@ -149,6 +206,11 @@ class EmployeesRepository implements EmployeesRepositoryInterface
     }
 
     /**
+     * Deletes the given employee from the system.
+     *
+     * @param Employee $employee The employee instance to be deleted.
+     *
+     * @return bool Returns true if the employee was successfully deleted.
      * @throws EmployeesControllerException
      */
     final public function deleteEmployee(Employee $employee): bool

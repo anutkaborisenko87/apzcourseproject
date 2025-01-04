@@ -20,6 +20,13 @@ use Illuminate\Pipeline\Pipeline;
 class ParrentsRepository implements ParrentsRepositoryInterface
 {
 
+    /**
+     * Retrieves and formats data for active parents based on the specified request.
+     *
+     * @param Request $request The incoming HTTP request containing filtering parameters.
+     * @return LengthAwarePaginator Paginated list of formatted active parent data.
+     * @throws ParrentControllerException If an error occurs while retrieving or formatting the data.
+     */
     final public function getActiveParrents(Request $request): LengthAwarePaginator
     {
         try {
@@ -29,6 +36,13 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Filters, processes, and formats parent data based on user activity and request parameters.
+     *
+     * @param bool $useractive Indicates whether to filter by active or inactive users.
+     * @param Request $request The incoming HTTP request containing pagination and filtering parameters.
+     * @return LengthAwarePaginator Paginated list of processed and formatted parent data.
+     */
     private function formatParrentsData(bool $useractive, Request $request): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
@@ -50,6 +64,12 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         return $parrents;
     }
 
+    /**
+     * Retrieves a list of active parents for selection purposes.
+     *
+     * @return Collection A collection of active parents.
+     * @throws ParrentControllerException If an error occurs during data retrieval.
+     */
     final public function getActiveParrentsForSelect(): Collection
     {
         try {
@@ -61,6 +81,14 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Retrieves a collection of active parents that can be selected for a given child,
+     * excluding parents already related to the specified child.
+     *
+     * @param int $childId The ID of the child to filter parent relations.
+     * @return Collection Collection of active parents available for selection.
+     * @throws ParrentControllerException If an error occurs during the retrieval process.
+     */
     final public function getActiveParrentsForUpdateSelect(int $childId): Collection
     {
         try {
@@ -74,6 +102,13 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Retrieves and formats data for inactive parents based on the specified request.
+     *
+     * @param Request $request The incoming HTTP request containing filtering parameters.
+     * @return LengthAwarePaginator Paginated list of formatted inactive parent data.
+     * @throws ParrentControllerException If an error occurs while retrieving or formatting the data.
+     */
     final public function getNotActiveParrents(Request $request): LengthAwarePaginator
     {
         try {
@@ -83,6 +118,13 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Retrieves a parent record by its unique identifier, including related children and user information.
+     *
+     * @param int $id The unique identifier of the parent.
+     * @return Parrent|null The parent record with related data or null if not found.
+     * @throws ParrentControllerException If the parent record is not found or an error occurs during retrieval.
+     */
     final public function getParrentById(int $id): ?Parrent
     {
         try {
@@ -97,6 +139,13 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Creates a new parent record along with associated child relationship data.
+     *
+     * @param array $data Data for the new parent, including optional child relationship details.
+     * @return Parrent The newly created parent instance.
+     * @throws ParrentControllerException If an error occurs during the creation process or while syncing relationships.
+     */
     final public function createParrent(array $data): Parrent
     {
         try {
@@ -119,6 +168,16 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Updates the given parent with provided data, including synchronizing child relationships.
+     *
+     * @param Parrent $parrent The parent entity to be updated.
+     * @param array $data Data to update the parent entity with, including children relationships if provided.
+     *
+     * @return Parrent The updated parent entity.
+     *
+     * @throws ParrentControllerException If updating the parent or child relationships fails.
+     */
     final public function updateParrent(Parrent $parrent, array $data): Parrent
     {
         try {
@@ -138,6 +197,15 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         }
     }
 
+    /**
+     * Deletes the specified parent entity.
+     *
+     * @param Parrent $parrent The parent entity to be deleted.
+     *
+     * @return bool True if the deletion was successful.
+     *
+     * @throws ParrentControllerException If the deletion fails.
+     */
     final public function deleteParrent(Parrent $parrent): bool
     {
         try {

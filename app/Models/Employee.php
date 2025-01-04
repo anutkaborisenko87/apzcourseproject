@@ -48,29 +48,9 @@ class Employee extends Model implements SearchableInterface
         return $this->belongsToMany(Group::class, 'employees_groups', 'employee_id', 'group_id')->withPivot(['date_start', 'date_finish']);
     }
 
-    final public function educational_programs(): HasMany
-    {
-        return $this->hasMany(EducationalProgram::class, 'employee_id', 'id');
-    }
-
-    final public function additional_classes(): HasMany
-    {
-        return $this->hasMany(AdditionalClass::class, 'employee_id', 'id');
-    }
-
-    final public function parrental_events(): HasMany
-    {
-        return $this->hasMany(ParentalEvent::class, 'employee_id', 'id');
-    }
-
     final public function educational_events(): HasMany
     {
         return $this->hasMany(EducationalEvent::class, 'employee_id', 'id');
-    }
-
-    final public function cultural_events(): HasMany
-    {
-        return $this->hasMany(CulturalEvent::class, 'employee_id', 'id');
     }
 
     public static function getSearchableFields(): array

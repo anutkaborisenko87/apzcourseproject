@@ -28,17 +28,6 @@ class Parrent extends Model implements SearchableInterface
     {
         return $this->belongsToMany(Children::class, 'child_parent_relations', 'parrent_id', 'child_id')->withPivot('relations');
     }
-
-    final public function visited_parental_events(): BelongsToMany
-    {
-        return $this->belongsToMany(ParentalEvent::class, 'parent_ev_parent', 'parrent_id', 'parental_event_id')->withPivot('result');
-    }
-
-    final public function visited_cultural_events(): BelongsToMany
-    {
-        return $this->belongsToMany(CulturalEvent::class, 'cult_ev_visitior', 'parrent_id', 'cultural_event_id')->withPivot('reaction');
-    }
-
     public static function getSearchableFields(): array
     {
         return [
