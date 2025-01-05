@@ -18,4 +18,6 @@ interface EmployeesRepositoryInterface
     public function updateEmployee(Employee $employee, array $data): Employee;
     public function deleteEmployee(Employee $employee): bool;
     public function getActiveTeachersForGroup(): Collection;
+    public function getMinEmploymentDate(bool $active): string;
+
 }

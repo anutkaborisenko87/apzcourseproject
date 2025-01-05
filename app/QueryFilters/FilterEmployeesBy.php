@@ -16,13 +16,22 @@ class FilterEmployeesBy extends UsersFilter
             if (strpos($sql, "left join `users` on `employees`.`user_id` = `users`.`id`") === false) {
                 $builder = $builder->leftJoin('users', 'employees.user_id', '=', 'users.id');
             }
-            if (!empty($filters['sex'])) {
-                $builder = $this->getJoinFiltersBuilder($builder, 'sex', $filters['sex']);
+            if (!empty($filters['group'])) {
+                $builder = $this->filterByGroup($builder, $filters['group']);
             }
             if (!empty($filters['city'])) {
                 $builder = $this->getJoinFiltersBuilder($builder, 'city', $filters['city']);
             }
         }
+        return $builder;
+    }
+
+    private function filterByGroup($builder, array $values) {
+        array_walk($values, function ($value) use (&$builder) {
+            $builder = $builder->whereHas('groups', function ($query) use ($value) {
+                $query->where('group_id', $value);
+            });
+        });
         return $builder;
     }
 }

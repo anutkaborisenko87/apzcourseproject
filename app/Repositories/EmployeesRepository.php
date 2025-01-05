@@ -6,6 +6,7 @@ use App\Exceptions\EmployeesControllerException;
 use App\Interfaces\RepsitotiesInterfaces\EmployeesRepositoryInterface;
 use App\Models\Employee;
 use App\Models\User;
+use App\QueryFilters\DateFilterEmployeesBy;
 use App\QueryFilters\EmployeeSearchBy;
 use App\QueryFilters\EmployeeSortBy;
 use App\QueryFilters\FilterEmployeesBy;
@@ -61,6 +62,7 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         $employees = app(Pipeline::class)
             ->send($employees)
             ->through([
+                DateFilterEmployeesBy::class,
                 EmployeeSortBy::class,
                 EmployeeSearchBy::class,
                 FilterEmployeesBy::class
@@ -221,5 +223,12 @@ class EmployeesRepository implements EmployeesRepositoryInterface
         } catch (Exception $exception) {
             throw EmployeesControllerException::deleteEmployeeError($exception->getCode());
         }
+    }
+
+    public function getMinEmploymentDate(bool $active): string
+    {
+        return Employee::whereHas('user', function ($query) use ($active) {
+            $query->where('active', $active);
+        })->min('employment_date') ?? '';
     }
 }

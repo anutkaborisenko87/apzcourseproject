@@ -7,10 +7,14 @@ use App\Http\Resources\TeachersForSelectResource;
 use App\Interfaces\RepsitotiesInterfaces\EmployeesRepositoryInterface;
 use App\Interfaces\RepsitotiesInterfaces\UserRepositoryInterface;
 use App\Interfaces\ServicesInterfaces\EmployeesServiceInterface;
+use App\Models\Employee;
+use App\Models\Group;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Permission\Models\Role;
+use function PHPUnit\Framework\countOf;
 
 class EmployeesService implements EmployeesServiceInterface
 {
@@ -33,27 +37,33 @@ class EmployeesService implements EmployeesServiceInterface
     {
         $employeesResp = $employeesPaginated->toArray();
         $employeesResp['data'] = EmployeeResource::collection($employeesPaginated->getCollection())->resolve();
+        $today = Carbon::today();
+        $groups = Group::whereHas('teachers', function ($query) use ($today) {
+            $query->where('date_start', '<', $today)
+                ->where('date_finish', '>', $today);
+        })->pluck('title', 'id')->toArray();
+        $groupsOptions = [];
+        if (count($groups) > 0) {
+            array_walk($groups, function ($group, $key) use (&$groupsOptions, $request) {
+                $groupsOptions[] = [
+                    'value' => $key,
+                    'label' => $group,
+                    'checked' => $request->has('filter_employees_by')
+                        && in_array('group', array_keys($request->input('filter_employees_by')))
+                        && in_array($key, array_values($request->input('filter_employees_by')['group']))
+                ];
+
+            });
+        }
+
         $requestData = $request->except(['page', 'per_page']);
-        $requestData['filters'][] = [
-            'id' => 'sex',
-            'name' => 'Гендерна приналежність',
-            'options' => [
-                [
-                    'value' => 'male',
-                    'label' => 'чоловік',
-                    'checked' => $request->has('filter_employees_by')
-                        && in_array('sex', array_keys($request->input('filter_employees_by')))
-                        && in_array('male', $request->input('filter_employees_by')['sex'])
-                ],
-                [
-                    'value' => 'female',
-                    'label' => 'жінка',
-                    'checked' => $request->has('filter_employees_by')
-                        && in_array('sex', array_keys($request->input('filter_employees_by')))
-                        && in_array('female', $request->input('filter_employees_by')['sex'])
-                ]
-            ]
-        ];
+        if (count($groupsOptions) > 0) {
+            $requestData['filters'][] = [
+                'id' => 'group',
+                'name' => 'Група викладання',
+                'options' => $groupsOptions
+            ];
+        }
         $citiesList = User::where('active', $active)->whereHas('employee')->citiesList()->toArray();
         $citiesList = array_map(function ($city) use ($request) {
             $cityString = $city ?? 'null';
@@ -70,6 +80,27 @@ class EmployeesService implements EmployeesServiceInterface
             'name' => 'Місто',
             'options' => $citiesList
         ];
+        $employmentDateOptions = [];
+        $requestedYearFilters = isset($request->input('date_filter_employees_by')['employment_date']) ? $request->input('date_filter_employees_by')['employment_date'] : [];
+        $employmentDateOptions['from'] = [
+            'value' => $requestedYearFilters['from'] ?? null,
+            'label' => "Від дати",
+            'min' => $this->teacherRepository->getMinEmploymentDate($active),
+            'max' => Carbon::today()->format("Y-m-d")
+        ];
+        $employmentDateOptions['to'] = [
+            'value' => $requestedYearFilters['to'] ?? null,
+            'label' => "До дати",
+            'min' => $this->teacherRepository->getMinEmploymentDate($active),
+            'max' => Carbon::today()->format("Y-m-d")
+        ];
+        if (!empty($employmentDateOptions)) {
+            $requestData['dateFilters'][] = array_merge([
+                'id' => 'employment_date',
+                'name' => 'Дата прийому на роботу',
+            ], $employmentDateOptions);
+        }
+
         return array_merge($employeesResp, $requestData);
     }
 
