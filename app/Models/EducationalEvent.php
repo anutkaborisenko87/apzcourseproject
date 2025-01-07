@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class EducationalEvent extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'subject',
         'event_date',
@@ -15,7 +17,6 @@ class EducationalEvent extends Model
         'developed_skills',
         'event_description',
         'employee_id',
-        'educational_program_id',
     ];
 
     final public function teacher(): BelongsTo

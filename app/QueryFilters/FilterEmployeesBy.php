@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 class FilterEmployeesBy extends UsersFilter
 {
     use HasJoinFiltersFields;
+
     public function applyFilter($builder, $request): Builder
     {
         $filters = $request->input($this->filterName());
@@ -26,11 +27,15 @@ class FilterEmployeesBy extends UsersFilter
         return $builder;
     }
 
-    private function filterByGroup($builder, array $values) {
-        array_walk($values, function ($value) use (&$builder) {
-            $builder = $builder->whereHas('groups', function ($query) use ($value) {
-                $query->where('group_id', $value);
+    private function filterByGroup($builder, array $values)
+    {
+        $builder = $builder->whereHas('groups', function ($query) use ($values) {
+            $query->where(function ($q) use ($values) {
+                array_walk($values, function ($value) use (&$builder, $q) {
+                    $q->orWhere('group_id', $value);
+                });
             });
+
         });
         return $builder;
     }

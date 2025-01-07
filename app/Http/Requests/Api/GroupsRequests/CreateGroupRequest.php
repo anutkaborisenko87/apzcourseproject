@@ -25,16 +25,15 @@ class CreateGroupRequest extends FormRequest
     {
         return [
             'title' => 'required|string|min:3|max:25',
-            'children' => 'sometimes|array',
+            'children' => 'sometimes|array|max:20',
             'children.*' => 'sometimes|numeric|exists:childrens,id',
-            'teachers' => 'sometimes|array',
+            'teachers' => 'sometimes|array|max:2',
             'teachers.*.employee_id' => 'sometimes|numeric|exists:employees,id',
-            'teachers.*.date_start' => 'sometimes|date',
-            'teachers.*.date_finish' => 'sometimes|date',
-            'educationalPrograms' => 'sometimes|array',
-            'educationalPrograms.*.ed_prog_id' => 'sometimes|numeric|exists:educational_programs,id',
-            'educationalPrograms.*.date_start' => 'sometimes|date',
-            'educationalPrograms.*.date_finish' => 'sometimes|date',
+            'date_start' => [
+                'required_if:children,!null|required_if:teachers,!null|required_if:date_finish,!null',
+                'date',
+            ],
+            'date_finish' => 'required_if:date_start,!null|date',
         ];
     }
 }

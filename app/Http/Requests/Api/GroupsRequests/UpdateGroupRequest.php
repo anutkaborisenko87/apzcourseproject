@@ -30,11 +30,7 @@ class UpdateGroupRequest extends FormRequest
             'teachers' => 'sometimes|array',
             'teachers.*.employee_id' => 'sometimes|numeric|exists:employees,id',
             'teachers.*.date_start' => 'sometimes|date',
-            'teachers.*.date_finish' => 'sometimes|date',
-            'educationalPrograms' => 'sometimes|array',
-            'educationalPrograms.*.ed_prog_id' => 'sometimes|numeric|exists:educational_programs,id',
-            'educationalPrograms.*.date_start' => 'sometimes|date',
-            'educationalPrograms.*.date_finish' => 'sometimes|date',
+            'teachers.*.date_finish' => 'sometimes|date'
         ];
     }
 }

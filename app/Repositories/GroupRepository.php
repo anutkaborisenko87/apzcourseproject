@@ -6,6 +6,7 @@ use App\Exceptions\GroupsControllerException;
 use App\Interfaces\RepsitotiesInterfaces\GroupRepositoryInterface;
 use App\Models\Children;
 use App\Models\Group;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
@@ -41,6 +42,7 @@ class GroupRepository implements GroupRepositoryInterface
     {
         try {
             $today = now()->format('Y-m-d');
+
             return Group::withCount([
                 'children' => function ($query) use ($today) {
                     $query->where('enrollment_date', '<=', $today)
@@ -50,7 +52,7 @@ class GroupRepository implements GroupRepositoryInterface
                         });
                 },
                 'teachers' => function ($query) use ($today) {
-                    $query->whereHas('groups', function($q) use ($today) {
+                    $query->whereHas('groups', function ($q) use ($today) {
                         $q->where('date_start', '<=', $today)
                             ->where(function ($q) use ($today) {
                                 $q->where('date_finish', '>=', $today)
@@ -100,25 +102,28 @@ class GroupRepository implements GroupRepositoryInterface
     final public function getGroupInfo(int $groupId, ?array $data = null): ?Group
     {
         try {
+            $month = now()->month;
+            $year = now()->year;
             $group = $this->getGroupById($groupId);
-            if ($data) {
-                $from = $data['from'] ?? null;
-                $to = $data['to'] ?? date('Y-m-d');
-                $group->load([
-                    'children' => function ($query) use ($from, $to) {
-                        $query->where('enrollment_date', '>=', $from)
-                            ->where('graduation_date', '<=', $to);
-                    },
-                    'teachers' => function ($query) use ($from, $to) {
-                        $query->wherePivot('date_start', '>=', $from)
-                            ->wherePivot('date_finish', '<=', $to);
-                    },
-                    'educationalPrograms' => function ($query) use ($from, $to) {
-                        $query->wherePivot('date_start', '>=', $from)
-                            ->wherePivot('date_finish', '<=', $to);
-                    },
-                ]);
+            if ($month >= 9) {
+                $from = $data['from'] ?? Carbon::create($year, 9, 1);
+                $to = $data['to'] ?? Carbon::create($year + 5, 9, 1);
+            } else {
+                $from = $data['from'] ?? Carbon::create($year - 1, 9, 1);
+                $to = $data['to'] ?? Carbon::create($year + 4, 9, 1);
             }
+            $group->load([
+                'children' => function ($query) use ($from, $to) {
+                    $query->whereNotNull('enrollment_date')
+                        ->where('enrollment_date', '>=', $from)
+                        ->where('graduation_date', '<=', $to);
+                },
+                'teachers' => function ($query) use ($from, $to) {
+                    $query->wherePivot('date_start', '>=', $from)
+                        ->wherePivot('date_finish', '<=', $to);
+                }
+            ]);
+
             return $group;
         } catch (Exception $exception) {
             throw GroupsControllerException::getGroupsListError($exception->getCode());
@@ -144,40 +149,32 @@ class GroupRepository implements GroupRepositoryInterface
                 $children = $data['children'];
                 unset($data['children']);
             }
+            $dateStart = $data['date_start'] ?? null;
+            $dateFinish = $data['date_finish'] ?? null;
+            if (isset($data['date_start'])) unset($data['date_start']);
+            if (isset($data['date_finish'])) unset($data['date_finish']);
             $teachersData = [];
             if (!empty($data['teachers'])) {
                 $teachers = $data['teachers'];
-                array_walk($teachers, function ($teacher) use (&$teachersData) {
-                    $teachersData[$teacher['employee_id']]['date_start'] = $teacher['date_start'] ?? null;
-                    $teachersData[$teacher['employee_id']]['date_finish'] = $teacher['date_finish'] ?? null;
+                array_walk($teachers, function ($teacher) use (&$teachersData, $dateStart, $dateFinish) {
+                    $teachersData[$teacher]['date_start'] = $dateStart ?? null;
+                    $teachersData[$teacher]['date_finish'] = $dateFinish ?? null;
                 });
                 unset($data['teachers']);
-            }
-            $educationalProgramsData = [];
-            if (!empty($data['educationalPrograms'])) {
-                $educationalPrograms = $data['educationalPrograms'];
-                array_walk($educationalPrograms, function ($teacher) use (&$educationalProgramsData) {
-                    $educationalProgramsData[$teacher['ed_prog_id']]['date_start'] = $teacher['date_start'] ?? null;
-                    $educationalProgramsData[$teacher['ed_prog_id']]['date_finish'] = $teacher['date_finish'] ?? null;
-                });
-                unset($data['educationalPrograms']);
             }
             $group = Group::create($data);
             if (!$group) throw GroupsControllerException::createGroupError(Response::HTTP_BAD_REQUEST);
             if (!empty($children)) {
-                array_walk($children, function ($child) use ($group) {
-                    Children::where('id', $child)->update(['group_id' => $group->id]);
+                array_walk($children, function ($child) use ($group, $dateStart, $dateFinish) {
+                    Children::where('id', $child)->update(['group_id' => $group->id, 'enrollment_date' => $dateStart, 'graduation_date' => $dateFinish]);
                 });
             }
             if (!empty($teachersData)) {
                 $group->teachers()->sync($teachersData);
             }
-            if (!empty($educationalProgramsData)) {
-                $group->educationalPrograms()->sync($educationalProgramsData);
-            }
-            return $group->load('children', 'teachers', 'educationalPrograms');
+            return $group->load('children', 'teachers');
         } catch (Exception $exception) {
-            throw GroupsControllerException::createGroupError($exception->getCode());
+            throw GroupsControllerException::createGroupError(Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -197,6 +194,10 @@ class GroupRepository implements GroupRepositoryInterface
     {
         try {
             $children = [];
+            $dateStart = $data['date_start'] ?? null;
+            $dateFinish = $data['date_finish'] ?? null;
+            if (isset($data['date_start'])) unset($data['date_start']);
+            if (isset($data['date_finish'])) unset($data['date_finish']);
             if (!empty($data['children'])) {
                 $children = $data['children'];
                 unset($data['children']);
@@ -204,35 +205,23 @@ class GroupRepository implements GroupRepositoryInterface
             $teachersData = [];
             if (!empty($data['teachers'])) {
                 $teachers = $data['teachers'];
-                array_walk($teachers, function ($teacher) use (&$teachersData) {
-                    $teachersData[$teacher['employee_id']]['date_start'] = $teacher['date_start'] ?? null;
-                    $teachersData[$teacher['employee_id']]['date_finish'] = $teacher['date_finish'] ?? null;
+                array_walk($teachers, function ($teacher) use (&$teachersData, $dateStart, $dateFinish) {
+                    $teachersData[$teacher]['date_start'] = $dateStart ?? null;
+                    $teachersData[$teacher]['date_finish'] = $dateFinish ?? null;
                 });
                 unset($data['teachers']);
-            }
-            $educationalProgramsData = [];
-            if (!empty($data['educationalPrograms'])) {
-                $educationalPrograms = $data['educationalPrograms'];
-                array_walk($educationalPrograms, function ($teacher) use (&$educationalProgramsData) {
-                    $educationalProgramsData[$teacher['ed_prog_id']]['date_start'] = $teacher['date_start'] ?? null;
-                    $educationalProgramsData[$teacher['ed_prog_id']]['date_finish'] = $teacher['date_finish'] ?? null;
-                });
-                unset($data['educationalPrograms']);
             }
             if (!empty($data)) {
                 if (!$group->update($data)) throw GroupsControllerException::updateGroupError(Response::HTTP_BAD_REQUEST);
             }
 
             if (!empty($children)) {
-                array_walk($children, function ($child) use ($group) {
-                    Children::where('id', $child)->update(['group_id' => $group->id]);
+                array_walk($children, function ($child) use ($group, $dateStart, $dateFinish) {
+                    Children::where('id', $child)->update(['group_id' => $group->id, 'enrollment_date' => $dateStart, 'graduation_date' => $dateFinish]);
                 });
             }
             if (!empty($teachersData)) {
                 $group->teachers()->syncWithoutDetaching($teachersData);
-            }
-            if (!empty($educationalProgramsData)) {
-                $group->educationalPrograms()->syncWithoutDetaching($educationalProgramsData);
             }
             return $group->load('children', 'teachers', 'educationalPrograms');
         } catch (Exception $exception) {
