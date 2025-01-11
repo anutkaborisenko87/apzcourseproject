@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Interfaces\ModelInterfaces\SearchableInterface;
 use App\Traits\HasUser;
 use App\Traits\Sortable;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -23,6 +24,11 @@ class Parrent extends Model implements SearchableInterface
         'passport_data',
         'marital_status'
     ];
+
+    public function scopeMaritalStatuses($query): Collection
+    {
+        return $query->distinct()->pluck('marital_status');
+    }
 
     final public function children_relations(): BelongsToMany
     {

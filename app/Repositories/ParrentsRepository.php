@@ -6,6 +6,7 @@ use App\Exceptions\ParrentControllerException;
 use App\Interfaces\RepsitotiesInterfaces\ParrentsRepositoryInterface;
 use App\Models\Parrent;
 use App\Models\User;
+use App\QueryFilters\FilterParrentsBy;
 use App\QueryFilters\ParrentSearchBy;
 use App\QueryFilters\ParrentSortBy;
 use App\QueryFilters\UserSearchBy;
@@ -52,6 +53,7 @@ class ParrentsRepository implements ParrentsRepositoryInterface
         $parrents = app(Pipeline::class)
             ->send($parrents)
             ->through([
+                FilterParrentsBy::class,
                 ParrentSearchBy::class,
                 ParrentSortBy::class
             ])->thenReturn();
