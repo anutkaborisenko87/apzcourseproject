@@ -8,6 +8,8 @@ use App\Models\Children;
 use App\Models\User;
 use App\QueryFilters\ChildSearchBy;
 use App\QueryFilters\ChildSortBy;
+use App\QueryFilters\DateFilterChildrensBy;
+use App\QueryFilters\FilterChildrensBy;
 use App\QueryFilters\UserSearchBy;
 use App\QueryFilters\UserSortBy;
 use Exception;
@@ -191,6 +193,8 @@ class ChildrenRepository implements ChildrenRepositoryInterface
         $childrenList = app(Pipeline::class)
             ->send($childrenQuery->with('user'))
             ->through([
+                DateFilterChildrensBy::class,
+                FilterChildrensBy::class,
                 ChildSearchBy::class,
                 ChildSortBy::class
             ])->thenReturn();
@@ -312,5 +316,21 @@ class ChildrenRepository implements ChildrenRepositoryInterface
         } catch (Exception $exception) {
             throw ChildrenControllerException::childrenNotDeletedError($child->id);
         }
+    }
+
+    public function getMinEnrolmentDate(): string
+    {
+        return Children::min('enrollment_date') ?? '';
+    }
+
+    public function getMinGraduationDate(): string
+    {
+        return Children::min('graduation_date') ?? '';
+    }
+
+    public function getMinBirthDate(): string
+    {
+         return  Children::join('users', 'childrens.user_id', '=', 'users.id')
+             ->min('users.birth_date') ?? '';
     }
 }

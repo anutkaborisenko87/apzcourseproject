@@ -22,4 +22,8 @@ interface ChildrenRepositoryInterface
     public function updateChildInfo(Children $child, array $data): Children;
     public function deleteChildInfo(Children $child): bool;
 
+    public function getMinEnrolmentDate(): string;
+    public function getMinGraduationDate(): string;
+    public function getMinBirthDate(): string;
+
 }

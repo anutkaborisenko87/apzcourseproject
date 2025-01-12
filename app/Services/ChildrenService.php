@@ -7,6 +7,8 @@ use App\Http\Resources\ChildrenResource;
 use App\Interfaces\RepsitotiesInterfaces\ChildrenRepositoryInterface;
 use App\Interfaces\ServicesInterfaces\ChildrenServiceInterface;
 use App\Interfaces\ServicesInterfaces\UserServiceInterface;
+use App\Models\Group;
+use Carbon\Carbon;
 use Exception;
 use DateTime;
 use Illuminate\Http\Request;
@@ -116,6 +118,83 @@ class ChildrenService implements ChildrenServiceInterface
         $childrenResp = $childrenPaginated->toArray();
         $childrenResp['data'] = ChildrenResource::collection($childrenPaginated->getCollection())->resolve();
         $requestData = $request->except(['page', 'per_page']);
+        $groupsList = Group::whereHas('children')->pluck('title', 'id')->toArray();
+        $groupsOptions = [];
+        if (!empty($groupsList)) {
+            array_walk($groupsList, function ($group, $key) use (&$groupsOptions, $request) {
+                $groupsOptions[] = [
+                    'value' => $key,
+                    'label' => $group,
+                    'checked' => $request->has('filter_childrens_by')
+                        && in_array('group', array_keys($request->input('filter_childrens_by')))
+                        && in_array($key, array_values($request->input('filter_childrens_by')['group']))
+                ];
+            });
+        }
+        if (!empty($groupsOptions)) {
+            $requestData['filters'][] = [
+                'id' => 'group',
+                'name' => 'Група навчання',
+                'options' => $groupsOptions
+            ];
+        }
+        $requestedEnrollmentDate = isset($request->input('date_filter_childrens_by')['enrollment_date']) ? $request->input('date_filter_childrens_by')['enrollment_date'] : [];
+        $enrolmentDateOptions['from'] = [
+            'value' => $requestedEnrollmentDate['from'] ?? null,
+            'label' => "Від дати",
+            'min' => $this->childrenRepository->getMinEnrolmentDate(),
+            'max' => Carbon::today()->format("Y-m-d")
+        ];
+        $enrolmentDateOptions['to'] = [
+            'value' => $requestedEnrollmentDate['to'] ?? null,
+            'label' => "До дати",
+            'min' => $this->childrenRepository->getMinEnrolmentDate(),
+            'max' => Carbon::today()->format("Y-m-d")
+        ];
+        if (!empty($enrolmentDateOptions)) {
+            $requestData['dateFilters'][] = array_merge([
+                'id' => 'enrollment_date',
+                'name' => 'Дата зарахування'
+            ], $enrolmentDateOptions);
+        }
+        $requestedGraduationDate = isset($request->input('date_filter_childrens_by')['graduation_date']) ? $request->input('date_filter_childrens_by')['graduation_date'] : [];
+        $graduationDateOptions['from'] = [
+            'value' => $requestedGraduationDate['from'] ?? null,
+            'label' => "Від дати",
+            'min' => $this->childrenRepository->getMinGraduationDate(),
+            'max' => Carbon::today()->addYears(4)->format("Y-m-d")
+        ];
+        $graduationDateOptions['to'] = [
+            'value' => $requestedGraduationDate['to'] ?? null,
+            'label' => "До дати",
+            'min' => $this->childrenRepository->getMinGraduationDate(),
+            'max' => Carbon::today()->addYears(4)->format("Y-m-d")
+        ];
+        if (!empty($graduationDateOptions)) {
+            $requestData['dateFilters'][] = array_merge([
+                'id' => 'graduation_date',
+                'name' => 'Дата випуску'
+            ], $graduationDateOptions);
+        }
+        $requestedBirthDate = isset($request->input('date_filter_childrens_by')['birth_date']) ? $request->input('date_filter_childrens_by')['birth_date'] : [];
+        $birthDateOptions['from'] = [
+            'value' => $requestedBirthDate['from'] ?? null,
+            'label' => "Від дати",
+            'min' => $this->childrenRepository->getMinBirthDate(),
+            'max' => Carbon::today()->format("Y-m-d")
+        ];
+        $birthDateOptions['to'] = [
+            'value' => $requestedBirthDate['to'] ?? null,
+            'label' => "До дати",
+            'min' => $this->childrenRepository->getMinBirthDate(),
+            'max' => Carbon::today()->format("Y-m-d")
+        ];
+        if (!empty($birthDateOptions)) {
+            $requestData['dateFilters'][] = array_merge([
+                'id' => 'birth_date',
+                'name' => 'Дата народження'
+            ], $birthDateOptions);
+        }
         return array_merge($childrenResp, $requestData);
     }
 
