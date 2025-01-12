@@ -125,3 +125,10 @@ Route::middleware(['is_admin'])
                 Route::delete('/delete', 'destroyGroupInfo');
             });
     });
+
+Route::middleware(['is_admin'])
+    ->controller(\App\Http\Controllers\Api\DashboardController::class)
+    ->prefix('dashboard')
+    ->group(function () {
+        Route::get('/', 'indexAllData');
+    });
