@@ -87,7 +87,7 @@ class DatabaseSeeder extends Seeder
                 $parent = Parrent::factory()
                     ->for($parentUser, 'user')
                     ->create();
-                $dirthDate = Carbon::create(now()->year - 3, rand(1, 12), rand(1, 28));
+                $dirthDate = Carbon::create(now()->year - 4, rand(1, 12), rand(1, 28));
                 $childUser = User::factory()
                     ->create([
                         'birth_date' => $dirthDate->format('Y-m-d'),

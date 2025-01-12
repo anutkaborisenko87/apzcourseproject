@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\RepsitotiesInterfaces\DashboardRepositoryInterface;
 use App\Interfaces\ServicesInterfaces\DashboardServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardService implements DashboardServiceInterface
@@ -56,6 +57,8 @@ class DashboardService implements DashboardServiceInterface
                 $childrenStat[$index]['child_id'] = $item->id;
                 $childrenStat[$index]['child_full_name'] = $item->user->last_name . " " . $item->user->first_name . " " . $item->user->patronymic_name;
                 $childrenStat[$index]['group'] = $item->group->title;
+                $childrenStat[$index]['birth_year'] = $item->user->birth_year;
+                $childrenStat[$index]['age'] =  Carbon::parse($item->user->birth_date)->age;
                 $childrenStat[$index]['visited_educational_events'] = $item->visited_educational_events->count();
                 $childrenStat[$index]['avg_estimation_mark'] = $item->visited_educational_events->flatMap(function ($event) {
                     return $event->children_visitors->pluck('pivot.estimation_mark')->filter();

@@ -30,6 +30,7 @@ class DashboardRepository implements DashboardRepositoryInterface
                 $from = $data['from'] ?? Carbon::create($year - 1, 9, 1);
                 $to = $data['to'] ?? Carbon::create($year, 9, 1);
             }
+            $educationPeriod = $from->format('Y') . '/' . $to->format('Y');
             $groups = Group::whereHas('teachers', function ($q) use ($today, $from, $to) {
                 $q->where('date_start', '<=', $today)
                     ->where(function ($q) use ($today) {
@@ -60,7 +61,7 @@ class DashboardRepository implements DashboardRepositoryInterface
             })->with(['visited_educational_events' => function ($query) use ($from, $today) {
                 $query->whereBetween('event_date', [$from, $today]);
             }]);
-            return compact('groups', 'teachers', 'childrens');
+            return compact('groups', 'teachers', 'childrens', 'educationPeriod');
 
         } catch (Exception $e) {
             throw DashboardControllerException::getDashboardDataError(ResponseAlias::HTTP_BAD_REQUEST);
