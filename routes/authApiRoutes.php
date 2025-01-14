@@ -131,4 +131,10 @@ Route::middleware(['is_admin'])
     ->prefix('dashboard')
     ->group(function () {
         Route::get('/', 'indexAllData');
+        Route::post('/group-report-word', 'getGroupReportWord');
+        Route::post('/group-report-excel', 'getGroupReportExcel');
+        Route::post('/educational-events-report-word', 'getEducationalEventsReportWord');
+        Route::post('/educational-events-report-excel', 'getEducationalEventsReportExcel');
+        Route::post('/children-report-word', 'getChildrenReportWord');
+        Route::post('/children-report-excel', 'getChildrenReportExcel');
     });

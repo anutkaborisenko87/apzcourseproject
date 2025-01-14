@@ -18,7 +18,7 @@ class Group extends Model
 
     final public function children(): HasMany
     {
-        return $this->hasMany(Children::class, 'group_id', 'id');
+        return $this->hasMany(Children::class, 'group_id', 'id')->with('user');
     }
 
     final public function teachers(): BelongsToMany

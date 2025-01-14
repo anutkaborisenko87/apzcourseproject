@@ -37,7 +37,7 @@ class Children extends Model implements SearchableInterface
 
     final public function parrent_relations(): BelongsToMany
     {
-        return $this->belongsToMany(Parrent::class, 'child_parent_relations', 'child_id', 'parrent_id')->withPivot('relations');
+        return $this->belongsToMany(Parrent::class, 'child_parent_relations', 'child_id', 'parrent_id')->with('user')->withPivot('relations');
     }
 
     final public function visited_educational_events(): BelongsToMany
