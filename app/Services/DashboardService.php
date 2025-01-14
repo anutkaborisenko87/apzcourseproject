@@ -23,7 +23,7 @@ class DashboardService implements DashboardServiceInterface
         $today = date('Y-m-d');
         if (isset($respData['groups'])) {
             $respData['groups']->each(function ($item, $index) use (&$groupsStat, $today) {
-                $groupsStat[$index]['group_id'] = $item->group_id;
+                $groupsStat[$index]['group_id'] = $item->id;
                 $groupsStat[$index]['group_title'] = $item->title;
                 if (!empty($item->teachers)) {
                     $educational_events = collect();
